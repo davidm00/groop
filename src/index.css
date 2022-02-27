@@ -1,3 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Serif&display=swap");
+
+:root {
+  --main-bg-color: #d9dcc7;
+  --secondary-bg-color: #cac6a8;
+  --neutral-color: #6c969e;
+  --deep-color: #376371;
+  --dark-color: #304a65;
+  background-color: var(--main-bg-color);
+  font-family: Roboto Serif;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +23,4 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+

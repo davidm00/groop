@@ -1,12 +1,12 @@
-// json data service
+// group service
 // req data with Parse
 import Parse from "parse";
 
 // READ operation - get all groups in Parse class Group
-export const getAllGroups = () => {
+export const getAllGroups = async() => {
   const Group = Parse.Object.extend("Group");
   const query = new Parse.Query(Group);
-  return query.find().then((results) => {
+  return await query.find().then((results) => {
     console.log("getAllGroups result: ", results);
     // returns array of Group objects
     return results;
@@ -14,13 +14,11 @@ export const getAllGroups = () => {
 };
 
 // READ operation - get lesson by ID
-export const getGroupById = (id) => {
+export const getGroupById = async(id) => {
   const Group = Parse.Object.extend("Group");
   const query = new Parse.Query(Group);
-  return query.get(id).then((result) => {
-    // return Lesson object with objectId: id
+  return await query.get(id).then((result) => {
     console.log("groupById result: ", result);
-    console.log("groupById result: ", result.attributes);
-    return result.attributes;
+    return result;
   });
 };

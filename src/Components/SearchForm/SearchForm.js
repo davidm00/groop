@@ -1,9 +1,9 @@
-import { html } from "https://unpkg.com/htm/preact/standalone.module.js";
+import "./SearchForm.css"
 
 // Add item form component
 // adds new item to data list
 export default function SearchForm({ searchFormOnSubmit, searchFormOnClear }) {
-  return html`
+  return (
     <form onSubmit="false" class="searchForm">
       <input class="searchFormInput" type="text" id="title" placeholder="Search for a list..."></input>
       <br />
@@ -14,5 +14,5 @@ export default function SearchForm({ searchFormOnSubmit, searchFormOnClear }) {
         searchFormOnClear(e);
       }}>Clear</button>
     </form>
-  `;
+  );
 }
