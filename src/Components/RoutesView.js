@@ -9,7 +9,7 @@ export default function RoutesView() {
     <Router>
       <Navbar />
       <Routes>
-        <Route index path="/group" element={<Groups />} />
+        <Route index path="/" element={<Groups />} />
         <Route path="/group" element={<Groups />} />
         <Route path="/list/:groupId" element={<List />} />
       </Routes>
