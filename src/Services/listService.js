@@ -17,3 +17,24 @@ export const getAllLists = async (groupId) => {
     return res;
   });
 };
+
+// READ operation - get all group members from the Group relation
+export const getAllGroupMembers = async (groupId) => {
+  console.log("GroupID in getAllGroupMembers: ", groupId);
+  const Group = Parse.Object.extend("Group");
+  const query = new Parse.Query(Group);
+  query.equalTo("objectId", groupId);
+  const group = await query.find();
+  console.log("group in getAllGroupMembers: ", group);
+  const relation = group[0].relation("persons");
+  const groupMembers = await relation.query().find({
+    success: function (persons) {
+      return persons;
+    }
+  })
+  console.log("groupMembers: ", groupMembers);
+  return groupMembers.map((member) => {
+    console.log("Group member name: ", member.attributes.name);
+    return member.attributes.name;
+  });
+};

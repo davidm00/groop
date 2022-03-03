@@ -1,4 +1,4 @@
-import "./List.css";
+import "./Lists.css";
 
 // ListCard Component
 const ListCard = ({ list }) => {
