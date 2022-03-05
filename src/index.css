@@ -6,7 +6,6 @@
   --neutral-color: #6c969e;
   --deep-color: #376371;
   --dark-color: #304a65;
-  background-color: var(--main-bg-color);
   font-family: Roboto Serif;
 }
 
@@ -22,5 +21,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
