@@ -111,6 +111,11 @@ const Navbar = () => {
               ))}
             </List>
             <Divider />
+            <Box sx={{flexGrow: 1}}>
+              <Typography align="center" sx={{paddingTop: 5}}>
+                <img height={"150px"} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png"/>
+              </Typography>
+            </Box>
           </Box>
         </Drawer>
       </Box>
@@ -119,7 +124,7 @@ const Navbar = () => {
             top: 65,
             left: 0,
             marginBottom: 2.5,
-            visibility: location.pathname !== "/groups" ? "auto" : "hidden",
+            visibility: (location.pathname === "/" || location.pathname === "/groups") && "hidden"
           }}
           onClick={() => navigate(-1)}
           color="inherit"
