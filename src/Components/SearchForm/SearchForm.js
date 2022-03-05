@@ -1,16 +1,17 @@
+import React from "react";
 import "./SearchForm.css"
 
 // Add item form component
 // adds new item to data list
 export default function SearchForm({ searchFormOnSubmit, searchFormOnClear }) {
   return (
-    <form onSubmit="false" class="searchForm">
-      <input class="searchFormInput" type="text" id="title" placeholder="Search for a list..."></input>
+    <form onSubmit="false" className="searchForm">
+      <input className="searchFormInput" type="text" id="title" placeholder="Search for a list..."></input>
       <br />
-      <button class="searchFormButton" type="submit" onClick=${(e) => {
+      <button className="searchFormButton" type="submit" onClick={(e) => {
         searchFormOnSubmit(e);
       }}>Search</button>
-      <button class="searchFormButton" type="submit" onClick=${(e) => {
+      <button className="searchFormButton" type="submit" onClick={(e) => {
         searchFormOnClear(e);
       }}>Clear</button>
     </form>

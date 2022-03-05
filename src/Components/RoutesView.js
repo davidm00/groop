@@ -1,3 +1,4 @@
+import React from "react";
 import Groups from "./Groups/Groups";
 import List from "./List/List";
 import Navbar from "../Common/Navbar/Navbar";
@@ -10,7 +11,7 @@ export default function RoutesView() {
       <Navbar />
       <Routes>
         <Route index path="/" element={<Groups />} />
-        <Route path="/group" element={<Groups />} />
+        <Route path="/groups" element={<Groups />} />
         <Route path="/list/:groupId" element={<List />} />
       </Routes>
     </Router>
