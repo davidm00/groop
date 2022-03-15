@@ -19,6 +19,6 @@
 ### 0.1.0
 > (Feature 3 to Pre-Feature 4) Migrated from Preact to React
 > - Includes multiple components, custom data service, and search form
-> - [Components Hierarchy Diagram (LucidChart)](https://lucid.app/lucidchart/566b887f-e81d-4af0-bcdb-7a6636a640f6/edit?invitationId=inv_950776cc-b067-4b60-af8f-fa439e22799f)
+> - [Components Hierarchy Diagram (PDF on Google Drive)](https://drive.google.com/file/d/1lZfwMiGPbyF33plmYBdeUBSwn3o8WO0b/view?usp=sharing)
 
 > - Includes multiple components, custom data service, and search form
