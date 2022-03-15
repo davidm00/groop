@@ -1,6 +1,6 @@
 # ChangeLog
 
-### 0.1.1
+### 0.2.0
 
 > (Feature 4) Implemented routing and Parse
 
