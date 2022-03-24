@@ -26,16 +26,16 @@ export const getAllGroupMembers = async (groupId) => {
   query.equalTo("objectId", groupId);
   const group = await query.find();
   console.log("group in getAllGroupMembers: ", group);
-  const relation = group[0].relation("persons");
+  const relation = group[0].relation("users");
   const groupMembers = await relation.query().find({
-    success: function (persons) {
-      return persons;
+    success: function (users) {
+      return users;
     }
   })
   console.log("groupMembers: ", groupMembers);
   return groupMembers.map((member) => {
-    console.log("Group member name: ", member.attributes.name);
+    console.log("Group member name: ", member.attributes.firstName, " ", member.attributes.lastName);
     // May return more here in the future, such as an image url, etc.
-    return member.attributes.name;
+    return member;
   });
 };
