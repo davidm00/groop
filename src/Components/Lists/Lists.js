@@ -63,7 +63,7 @@ const List = () => {
         {
         groupMembers.length > 0 ? 
           groupMembers.map((member) => {
-          return <li key={member}>{member}</li>;
+          return <li key={member.attributes.username}>{member.attributes.firstName + " " + member.attributes.lastName}</li>;
         }) : <>No Group Members</>
         }
         </ul>
