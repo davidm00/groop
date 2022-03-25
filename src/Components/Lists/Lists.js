@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAllLists, getAllGroupMembers } from "../../Services/listService";
 import { makeStyles, useTheme } from "@mui/styles";
-import { Typography, Box, CircularProgress, Avatar, AvatarGroup, Tooltip, Backdrop, Modal, Fade, Stack, Divider} from "@mui/material";
+import { Typography, Box, CircularProgress, Avatar, AvatarGroup, 
+  Tooltip, Backdrop, Modal, Fade, ListItem, ListItemAvatar, 
+  ListItemText, List as MuiList} from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 import ListCard from "./ListCard";
 
@@ -52,9 +55,19 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '0.5em',
     padding: '1em'
   },
-  groupMemberItemInModal: {
-    display: 'flex',
-    alignItems: 'center',
+  closeButtonContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "-2.5em",
+  },
+  closeButton: {
+    backgroundColor: "darkGray",
+    color: "white",
+    borderRadius: "50%",
+    boxShadow: " 0 2px 4px 0 rgba(0, 0, 0, 0.2)",
+    "&:hover": {
+      backgroundColor: "gray"
+    },
   }
 }));
 
@@ -87,7 +100,6 @@ const List = () => {
     });
   }, [params.groupId])
 
-  // display list
   return (
     <Box sx={{ flexGrow: 1 }}>
       <div>
@@ -104,30 +116,39 @@ const List = () => {
         >
           <Fade in={open}>
             <Box className={classes.modalStyle}>
-              <Typography align="center" paddingBottom="1em" variant="h6">
-                Group Members
-              </Typography>
-              <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
-              { groupMembers && groupMembers.map((member) => {
-                return (member.attributes.profilePhoto) ? 
-                (<Box className={classes.groupMemberItemInModal}>
-                  <Avatar alt={member.attributes.username} key={member.email} src={member.attributes.profilePhoto._url} />
-                  <Typography style={{paddingLeft: "1em"}}>
-                    {member.attributes.firstName + " " + member.attributes.lastName}
-                  </Typography>
+              <Box>
+                <Typography align="center" paddingBottom="0.5em" variant="h6">
+                  Group Members
+                </Typography>
+                <Box className={classes.closeButtonContainer}>
+                 <CloseIcon className={classes.closeButton} fontSize="small" onClick={handleClose}/>
                 </Box>
-                )
-                : 
-                (
-                <Box className={classes.groupMemberItemInModal}>
-                  <Avatar sx={{bgcolor: theme.palette.secondary.main, color: 'white'}} alt={member.attributes.username} key={member.email}>{member.attributes.firstName[0] + member.attributes.lastName[0]}</Avatar>
-                  <Typography style={{paddingLeft: "1em"}}>
-                    {member.attributes.firstName + " " + member.attributes.lastName}
-                  </Typography>
-                </Box>
-                )
-              })}
-              </Stack>
+              </Box>
+              <MuiList sx={{maxHeight: 250, overflow: 'auto'}}>
+                { groupMembers && groupMembers.map((member) => {
+                  return (member.attributes.profilePhoto) ? 
+                  (
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar alt={member.attributes.username} key={member.email} src={member.attributes.profilePhoto._url} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={member.attributes.firstName + " " + member.attributes.lastName}
+                    />
+                  </ListItem>
+                  ) :
+                  (
+                  <ListItem>
+                    <ListItemAvatar>
+                    <Avatar sx={{bgcolor: theme.palette.secondary.main, color: 'white'}} alt={member.attributes.username} key={member.email}>{member.attributes.firstName[0] + member.attributes.lastName[0]}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={member.attributes.firstName + " " + member.attributes.lastName}
+                    />
+                  </ListItem>
+                  )
+                })}
+              </MuiList>
             </Box>
           </Fade>
         </Modal>
