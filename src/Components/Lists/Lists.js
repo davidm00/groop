@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAllLists, getAllGroupMembers } from "../../Services/listService";
 import { makeStyles, useTheme } from "@mui/styles";
-import { Typography, Box, CircularProgress, Avatar, AvatarGroup, Tooltip } from "@mui/material";
+import { Typography, Box, CircularProgress, Avatar, AvatarGroup, Tooltip, Backdrop, Modal, Fade, Stack, Divider} from "@mui/material";
 
 import ListCard from "./ListCard";
 
@@ -28,13 +28,33 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "2em",
     padding: "0.3em 1em 0.3em 1em",
     borderRadius: "1.2em",
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: 'white',
     boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+    "&:hover": {
+      boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+    },
   },
   pageHeader: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingRight: '1em'
+  },
+  modalStyle: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 350,
+    backgroundColor: 'white',
+    color: theme.palette.text.primary,
+    p: 4,
+    borderRadius: '0.5em',
+    padding: '1em'
+  },
+  groupMemberItemInModal: {
+    display: 'flex',
+    alignItems: 'center',
   }
 }));
 
@@ -45,6 +65,13 @@ const List = () => {
   const classes = useStyles();
   const params = useParams();
   const theme = useTheme();
+  // for group members modal
+  const noOp = () => {};
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => {
+    (groupMembers && groupMembers.length > 0) ? setOpen(true) : noOp();
+  };
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     // Get all lists in a specific group
@@ -63,6 +90,48 @@ const List = () => {
   // display list
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <div>
+        <Modal
+          aria-labelledby="Group Members Modal"
+          aria-describedby="A list of the current members in this group"
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={open}>
+            <Box className={classes.modalStyle}>
+              <Typography align="center" paddingBottom="1em" variant="h6">
+                Group Members
+              </Typography>
+              <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
+              { groupMembers && groupMembers.map((member) => {
+                return (member.attributes.profilePhoto) ? 
+                (<Box className={classes.groupMemberItemInModal}>
+                  <Avatar alt={member.attributes.username} key={member.email} src={member.attributes.profilePhoto._url} />
+                  <Typography style={{paddingLeft: "1em"}}>
+                    {member.attributes.firstName + " " + member.attributes.lastName}
+                  </Typography>
+                </Box>
+                )
+                : 
+                (
+                <Box className={classes.groupMemberItemInModal}>
+                  <Avatar sx={{bgcolor: theme.palette.secondary.main, color: 'white'}} alt={member.attributes.username} key={member.email}>{member.attributes.firstName[0] + member.attributes.lastName[0]}</Avatar>
+                  <Typography style={{paddingLeft: "1em"}}>
+                    {member.attributes.firstName + " " + member.attributes.lastName}
+                  </Typography>
+                </Box>
+                )
+              })}
+              </Stack>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
       <div className={classes.pageHeader}>
         <Typography
           variant="h1"
@@ -72,7 +141,7 @@ const List = () => {
         >
           List Component
         </Typography>
-        <div className={classes.avatarsContainer}>
+        <div className={classes.avatarsContainer} onClick={handleOpen}>
           {groupMembers ? (
             <AvatarGroup max={4}>
             {
