@@ -55,10 +55,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '0.5em',
     padding: '1em'
   },
+  groupMembersModalList: {
+
+  },
   closeButtonContainer: {
     display: "flex",
     justifyContent: "flex-end",
-    marginTop: "-2.5em",
+    marginTop: "-2em",
   },
   closeButton: {
     backgroundColor: "darkGray",
@@ -117,14 +120,14 @@ const List = () => {
           <Fade in={open}>
             <Box className={classes.modalStyle}>
               <Box>
-                <Typography align="center" paddingBottom="0.5em" variant="h6">
+                <Typography align="center" variant="h6">
                   Group Members
                 </Typography>
                 <Box className={classes.closeButtonContainer}>
                  <CloseIcon className={classes.closeButton} fontSize="small" onClick={handleClose}/>
                 </Box>
               </Box>
-              <MuiList sx={{maxHeight: 250, overflow: 'auto'}}>
+              <MuiList sx={{maxHeight: 250, overflow: 'auto', paddingTop: '1em'}}>
                 { groupMembers && groupMembers.map((member) => {
                   return (member.attributes.profilePhoto) ? 
                   (
