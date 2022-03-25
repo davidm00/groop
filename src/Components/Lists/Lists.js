@@ -2,12 +2,12 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAllLists, getAllGroupMembers } from "../../Services/listService";
-import { makeStyles } from "@mui/styles";
-import { Typography, Box, CircularProgress } from "@mui/material";
+import { makeStyles, useTheme } from "@mui/styles";
+import { Typography, Box, CircularProgress, Avatar, AvatarGroup, Tooltip } from "@mui/material";
 
 import ListCard from "./ListCard";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   listGrid: {
     margin: 20,
     width: "100%",
@@ -23,14 +23,28 @@ const useStyles = makeStyles(() => ({
     transition: "0.3s all",
     zIndex: 5,
   },
+  avatarsContainer: {
+    // border: "1px solid",
+    marginRight: "2em",
+    padding: "0.3em 1em 0.3em 1em",
+    borderRadius: "1.2em",
+    backgroundColor: theme.palette.primary.light,
+    boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+  },
+  pageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }
 }));
 
 // List Component
 const List = () => {
   const [lists, setLists] = useState(null);
-  const [groupMembers, setGroupMembers] = useState([]);
+  const [groupMembers, setGroupMembers] = useState(null);
   const classes = useStyles();
   const params = useParams();
+  const theme = useTheme();
 
   useEffect(() => {
     // Get all lists in a specific group
@@ -49,24 +63,50 @@ const List = () => {
   // display list
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Typography
-        variant="h1"
-        sx={{ fontSize: 28, padding: 5 }}
-        gutterBottom
-        align={"left"}
-      >
-        List Component
-      </Typography>
-      <div className="groupMembers">
-        <p>Group Members:</p>
-        <ul>
-        {
-        groupMembers.length > 0 ? 
-          groupMembers.map((member) => {
-          return <li key={member.attributes.username}>{member.attributes.firstName + " " + member.attributes.lastName}</li>;
-        }) : <>No Group Members</>
-        }
-        </ul>
+      <div className={classes.pageHeader}>
+        <Typography
+          variant="h1"
+          sx={{ fontSize: 28, padding: 5, width: '50%' }}
+          gutterBottom
+          align={"left"}
+        >
+          List Component
+        </Typography>
+        <div className={classes.avatarsContainer}>
+          {groupMembers ? (
+            <AvatarGroup max={4}>
+            {
+            groupMembers.length > 0 ? 
+              groupMembers.map((member) => {
+              //return <li key={member.attributes.username}>{member.attributes.firstName + " " + member.attributes.lastName}</li>;
+              console.log("Member Attributes: ", member.attributes);
+              return (member.attributes.profilePhoto) ? 
+              (
+              <Tooltip title={member.attributes.firstName + " " + member.attributes.lastName} arrow>
+                <Avatar sx={{width: '1.5em', height: '1.5em'}} alt={member.attributes.username} key={member.email} src={member.attributes.profilePhoto._url} />
+              </Tooltip>
+              )
+              : 
+              (
+              <Tooltip title={member.attributes.firstName + " " + member.attributes.lastName} arrow>
+                <Avatar sx={{bgcolor: theme.palette.secondary.main, color: theme.palette.primary.light, width: '1.5em', height: '1.5em'}} alt={member.attributes.username} key={member.email}>{member.attributes.firstName[0] + member.attributes.lastName[0]}</Avatar>
+              </Tooltip>
+              )
+            
+
+            }) : <>No Group Members</>
+            }
+            </AvatarGroup>)
+            :
+            (
+            <CircularProgress
+              color="secondary"
+              size={'1.5em'}
+              className={classes.loader}
+            />
+            )
+          }
+        </div>
       </div>
       {lists ? (
         <Box sx={{ flexGrow: 1 }} className={classes.listGrid}>
