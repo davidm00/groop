@@ -10,7 +10,9 @@ const UserContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (Parse.User.current()) {
-      setLocalUser(Parse.User.current());
+      if (Parse.User.current().authenticated()) {
+        setLocalUser(Parse.User.current());
+      }
     }
   }, []);
 

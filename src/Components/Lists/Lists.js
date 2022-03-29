@@ -55,9 +55,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '0.5em',
     padding: '1em'
   },
-  groupMembersModalList: {
-
-  },
   closeButtonContainer: {
     display: "flex",
     justifyContent: "flex-end",
@@ -171,7 +168,6 @@ const List = () => {
             {
             groupMembers.length > 0 ? 
               groupMembers.map((member) => {
-              //return <li key={member.attributes.username}>{member.attributes.firstName + " " + member.attributes.lastName}</li>;
               console.log("Member Attributes: ", member.attributes);
               return (member.attributes.profilePhoto) ? 
               (
