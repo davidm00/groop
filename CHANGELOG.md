@@ -1,4 +1,23 @@
 # ChangeLog
+### 0.3.0
+
+> (Feature 5) Authentication
+
+> - [Updated UML Diagrams (Google Slides)](https://docs.google.com/presentation/d/1hqoLUkQqo7VtmUwr59hd4qNV3zNioZZG9MfKgY40slo/edit?usp=sharing)
+
+> - Updated relations to use User class instead of Person class
+
+> - Deleted Person class in Parse
+
+> - Created auth components
+
+> - Created auth service
+
+> - Created protected routes for Group and List components
+
+> - Updated Group component to display members
+
+> - Added landing page
 
 ### 0.2.0
 
