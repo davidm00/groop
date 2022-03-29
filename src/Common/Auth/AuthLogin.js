@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import { logIn } from "./AuthService";
 import AuthForm from "./AuthForm";
 import { useNavigate } from "react-router-dom";
@@ -17,37 +17,31 @@ const AuthLogin = () => {
   const [add, setAdd] = useState(false);
 
   // useEffect that run when changes are made to the state variable flags
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (user && add) {
       logIn(user).then((userLoggedIn) => {
         if (userLoggedIn) {
-          alert(
+          console.log(
             `${userLoggedIn.get("firstName")}, you successfully logged in!`
           );
+          // TODO: redirect user to main app
+          setAdd(false);
+          setLocalUser(user)
+          navigate("/groups");
         }
-        // TODO: redirect user to main app
-        setAdd(false);
-        setLocalUser(user)
-        navigate("/groups");
+      }).catch((e) => {
+        alert('Incorrect credentials')
       });
     }
   }, [user, add, navigate, setLocalUser]);
 
-  const onChangeHandler = (e) => {
-    e.preventDefault();
-    // console.log(e.target);
-    const { name, value: newValue } = e.target;
-    // console.log(newValue);
-
-    setUser({
-      ...user,
-      [name]: newValue
-    });
+  const onChangeHandler = (prop) => (event) => {
+    setUser({ ...user, [prop]: event.target.value });
   };
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    console.log("submitted: ", e.target);
+    // console.log("submitted: ", e.target);
     setAdd(true);
   };
 

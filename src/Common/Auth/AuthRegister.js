@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import { createUser } from "./AuthService";
 import AuthForm from "./AuthForm";
 import { useNavigate } from "react-router-dom";
@@ -19,11 +19,11 @@ const AuthRegister = () => {
   const [add, setAdd] = useState(false);
 
   // useEffect that run when changes are made to the state variable flags
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (newUser && add) {
       createUser(newUser).then((userCreated) => {
         if (userCreated) {
-          alert(
+          console.log(
             `${userCreated.get("firstName")}, you successfully registered!`
           );
         }
@@ -35,21 +35,13 @@ const AuthRegister = () => {
     }
   }, [newUser, add, navigate, setLocalUser]);
 
-  const onChangeHandler = (e) => {
-    e.preventDefault();
-    // console.log(e.target);
-    const { name, value: newValue } = e.target;
-    // console.log(newValue);
-
-    setNewUser({
-      ...newUser,
-      [name]: newValue
-    });
+  const onChangeHandler = (prop) => (event) => {
+    setNewUser({ ...newUser, [prop]: event.target.value });
   };
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    console.log("submitted: ", e.target);
+    // console.log("submitted: ", e.target);
     setAdd(true);
   };
 

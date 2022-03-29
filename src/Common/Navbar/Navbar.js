@@ -75,11 +75,32 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {/* <Button
+              disableElevation
+              variant="text"
+              onClick={() => navigate("/", { replace: true })}
+              startIcon={<Home />}
+            >
               Groop
+            </Button> */}
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <button
+                // disableElevation
+                // variant="text"
+                onClick={() => navigate("/", { replace: true })}
+                // startIcon={<Home />}
+              >
+                Groop
+              </button>
             </Typography>
             {localUser && (
-              <Button color="inherit" onClick={() => logOut()}>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  logOut();
+                  navigate("/login", { replace: true });
+                }}
+              >
                 Log Out
               </Button>
             )}
@@ -138,7 +159,7 @@ const Navbar = () => {
           left: 0,
           marginBottom: 2.5,
           visibility:
-            (location.pathname === "/" || location.pathname === "/groups") &&
+            (location.pathname === "/" || location.pathname === "/groups" || location.pathname === "/login" || location.pathname === "/register") &&
             "hidden",
         }}
         onClick={() => navigate(-1)}

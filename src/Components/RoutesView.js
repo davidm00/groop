@@ -3,9 +3,9 @@ import React, { useContext } from "react";
 import Groups from "./Groups/Groups";
 import Lists from "./Lists/Lists";
 import Navbar from "../Common/Navbar/Navbar";
-import AuthModule from "./Auth/Auth";
-import AuthLogin from "./Auth/AuthLogin";
-import AuthRegister from "./Auth/AuthRegister";
+import Home from "./Home/Home";
+import AuthLogin from "../Common/Auth/AuthLogin";
+import AuthRegister from "../Common/Auth/AuthRegister";
 import ProtectedRoute from "../Common/ProtectedRoute/ProtectedRoute";
 
 import {
@@ -25,7 +25,7 @@ export default function RoutesView() {
         <Route
           index
           path="/"
-          element={<AuthModule />}
+          element={<Home />}
         />
         <Route
           path="/login"
