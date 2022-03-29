@@ -1,5 +1,5 @@
-import React from "react";
-import { useState } from "react";
+import React, { useContext, useState } from "react";
+import Parse from "parse/lib/browser/Parse";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -24,6 +24,7 @@ import {
   Drafts,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
+import { UserContext } from "../../Context/userContext";
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -33,13 +34,14 @@ const useStyles = makeStyles((theme) => ({
       width: 240,
       boxSizing: "border-box",
       backgroundColor: theme.palette.secondary.main,
-      color: "white"
+      color: "white",
     },
   },
 }));
 
 const Navbar = () => {
   const classes = useStyles();
+  const { localUser, setLocalUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -47,6 +49,11 @@ const Navbar = () => {
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
+  };
+
+  const logOut = async () => {
+    Parse.User.logOut();
+    setLocalUser(null);
   };
 
   return (
@@ -68,12 +75,35 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {/* <Button
+              disableElevation
+              variant="text"
+              onClick={() => navigate("/", { replace: true })}
+              startIcon={<Home />}
+            >
               Groop
+            </Button> */}
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <button
+                // disableElevation
+                // variant="text"
+                onClick={() => navigate("/", { replace: true })}
+                // startIcon={<Home />}
+              >
+                Groop
+              </button>
             </Typography>
-            {/* <Link to="/login" disabled> */}
-            <Button color="inherit">Login</Button>
-            {/* </Link> */}
+            {localUser && (
+              <Button
+                color="inherit"
+                onClick={() => {
+                  logOut();
+                  navigate("/login", { replace: true });
+                }}
+              >
+                Log Out
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -99,7 +129,7 @@ const Navbar = () => {
                   onClick={() => toggleDrawer()}
                 >
                   <ListItem button>
-                    <ListItemIcon sx={{color: "white"}}>
+                    <ListItemIcon sx={{ color: "white" }}>
                       {text === "Account" && <Account />}
                       {text === "Groups" && <Group />}
                       {text === "Settings" && <Settings />}
@@ -111,26 +141,32 @@ const Navbar = () => {
               ))}
             </List>
             <Divider />
-            <Box sx={{flexGrow: 1}}>
-              <Typography align="center" sx={{paddingTop: 5}}>
-                <img height={"150px"} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png"/>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography align="center" sx={{ paddingTop: 5 }}>
+                <img
+                  height={"150px"}
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png"
+                  alt="logo"
+                />
               </Typography>
             </Box>
           </Box>
         </Drawer>
       </Box>
       <Button
-          sx={{
-            top: 65,
-            left: 0,
-            marginBottom: 2.5,
-            visibility: (location.pathname === "/" || location.pathname === "/groups") && "hidden"
-          }}
-          onClick={() => navigate(-1)}
-          color="inherit"
-        >
-          <ArrowBack /> Back
-        </Button>
+        sx={{
+          top: 65,
+          left: 0,
+          marginBottom: 2.5,
+          visibility:
+            (location.pathname === "/" || location.pathname === "/groups" || location.pathname === "/login" || location.pathname === "/register") &&
+            "hidden",
+        }}
+        onClick={() => navigate(-1)}
+        color="inherit"
+      >
+        <ArrowBack /> Back
+      </Button>
     </Box>
   );
 };
