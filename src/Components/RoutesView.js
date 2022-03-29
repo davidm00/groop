@@ -10,6 +10,7 @@ import ProtectedRoute from "../Common/ProtectedRoute/ProtectedRoute";
 
 import {
   BrowserRouter as Router,
+  Navigate,
   Route,
   Routes,
 } from "react-router-dom";
@@ -29,11 +30,11 @@ export default function RoutesView() {
         />
         <Route
           path="/login"
-          element={<AuthLogin />}
+          element={!localUser ? <AuthLogin /> : <Navigate to="/"/>}
         />
         <Route
           path="/register"
-          element={<AuthRegister />}
+          element={!localUser ? <AuthRegister /> : <Navigate to="/"/>}
         />
         <Route
           path="/groups"
