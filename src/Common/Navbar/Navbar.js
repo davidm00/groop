@@ -22,6 +22,7 @@ import {
   Group,
   Settings,
   Drafts,
+  Home,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { UserContext } from "../../Context/userContext";
@@ -75,23 +76,15 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            {/* <Button
-              disableElevation
-              variant="text"
-              onClick={() => navigate("/", { replace: true })}
-              startIcon={<Home />}
-            >
-              Groop
-            </Button> */}
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <button
-                // disableElevation
-                // variant="text"
+              <Button
+                disableElevation
+                variant="text"
                 onClick={() => navigate("/", { replace: true })}
-                // startIcon={<Home />}
+                startIcon={<Home />}
               >
                 Groop
-              </button>
+              </Button>
             </Typography>
             {localUser && (
               <Button
@@ -159,7 +152,10 @@ const Navbar = () => {
           left: 0,
           marginBottom: 2.5,
           visibility:
-            (location.pathname === "/" || location.pathname === "/groups" || location.pathname === "/login" || location.pathname === "/register") &&
+            (location.pathname === "/" ||
+              location.pathname === "/groups" ||
+              location.pathname === "/login" ||
+              location.pathname === "/register") &&
             "hidden",
         }}
         onClick={() => navigate(-1)}

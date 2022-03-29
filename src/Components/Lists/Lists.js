@@ -131,7 +131,7 @@ const List = () => {
                 { groupMembers && groupMembers.map((member) => {
                   return (member.attributes.profilePhoto) ? 
                   (
-                  <ListItem>
+                  <ListItem key={member}>
                     <ListItemAvatar>
                       <Avatar alt={member.attributes.username} key={member.email} src={member.attributes.profilePhoto._url} />
                     </ListItemAvatar>
@@ -141,7 +141,7 @@ const List = () => {
                   </ListItem>
                   ) :
                   (
-                  <ListItem>
+                  <ListItem key={member}>
                     <ListItemAvatar>
                     <Avatar sx={{bgcolor: theme.palette.secondary.main, color: 'white'}} alt={member.attributes.username} key={member.email}>{member.attributes.firstName[0] + member.attributes.lastName[0]}</Avatar>
                     </ListItemAvatar>

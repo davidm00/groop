@@ -5,14 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
 const AuthRegister = () => {
-    const navigate = useNavigate();
-    const {setLocalUser} = useContext(UserContext);
+  const navigate = useNavigate();
+  const { setLocalUser } = useContext(UserContext);
 
   const [newUser, setNewUser] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   // flags in the state to watch for add/remove updates
@@ -21,17 +21,24 @@ const AuthRegister = () => {
   // useEffect that run when changes are made to the state variable flags
   useLayoutEffect(() => {
     if (newUser && add) {
-      createUser(newUser).then((userCreated) => {
-        if (userCreated) {
-          console.log(
-            `${userCreated.get("firstName")}, you successfully registered!`
-          );
-        }
-        // TODO: redirect user to main app
-        setAdd(false);
-        setLocalUser(newUser)
-        navigate("/groups");
-      });
+      createUser(newUser)
+        .then((userCreated) => {
+          if (userCreated) {
+            console.log(
+              `${userCreated.get("firstName")}, you successfully registered!`
+            );
+            // TODO: redirect user to main app
+            setAdd(false);
+            setLocalUser(newUser);
+            navigate("/groups");
+          } else {
+            setAdd(false);
+          }
+        })
+        .catch((e) => {
+          alert("Incorrect credentials");
+          setAdd(false);
+        });
     }
   }, [newUser, add, navigate, setLocalUser]);
 

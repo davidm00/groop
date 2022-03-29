@@ -6,11 +6,11 @@ import { UserContext } from "../../Context/userContext";
 
 const AuthLogin = () => {
   const navigate = useNavigate();
-  const {setLocalUser} = useContext(UserContext);
+  const { setLocalUser } = useContext(UserContext);
 
   const [user, setUser] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   // flags in the state to watch for add/remove updates
@@ -19,19 +19,24 @@ const AuthLogin = () => {
   // useEffect that run when changes are made to the state variable flags
   useLayoutEffect(() => {
     if (user && add) {
-      logIn(user).then((userLoggedIn) => {
-        if (userLoggedIn) {
-          console.log(
-            `${userLoggedIn.get("firstName")}, you successfully logged in!`
-          );
-          // TODO: redirect user to main app
+      logIn(user)
+        .then((userLoggedIn) => {
+          if (userLoggedIn) {
+            console.log(
+              `${userLoggedIn.get("firstName")}, you successfully logged in!`
+            );
+            // TODO: redirect user to main app
+            setAdd(false);
+            setLocalUser(user);
+            navigate("/groups");
+          } else {
+            setAdd(false);
+          }
+        })
+        .catch((e) => {
+          alert("Incorrect credentials");
           setAdd(false);
-          setLocalUser(user)
-          navigate("/groups");
-        }
-      }).catch((e) => {
-        alert('Incorrect credentials')
-      });
+        });
     }
   }, [user, add, navigate, setLocalUser]);
 

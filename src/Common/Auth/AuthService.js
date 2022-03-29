@@ -29,13 +29,17 @@ export const logIn = (userInfo) => {
   user.set("email", userInfo.email);
   user.set("password", userInfo.password);
 
+  if(userInfo.email)
+
   console.log("User: ", user);
   return user
     .logIn()
     .then((userLoggedIn) => {
+      console.log("userLoggedIn: ", userLoggedIn)
       return userLoggedIn;
     })
     .catch((error) => {
-      alert(`Error: ${error.message}`);
+      alert(`In LogIn Error: ${error.message}`);
+      return null;
     });
 };
