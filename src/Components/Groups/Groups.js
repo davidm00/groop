@@ -5,7 +5,7 @@ import { Typography, Box } from "@mui/material";
 
 import GroupCard from "./GroupCard";
 
-import { getAllGroups } from "../../Services/groupService";
+import { getUsersGroups } from "../../Services/groupService";
 
 const useStyles = makeStyles(() => ({
   groupGrid: {
@@ -26,7 +26,7 @@ const Groups = () => {
   const [groups, setGroups] = useState([]);
   useEffect(() => {
     // fetch groups via Parse
-    getAllGroups().then((res) => {
+    getUsersGroups().then((res) => {
       console.log(`Groups: `, res);
       setGroups(res);
     });
