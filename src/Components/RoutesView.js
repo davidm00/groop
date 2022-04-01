@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 
 import Groups from "./Groups/Groups";
 import Lists from "./Lists/Lists";
+import Items from "./Items/Items";
 import Navbar from "../Common/Navbar/Navbar";
 import Home from "./Home/Home";
 import AuthLogin from "../Common/Auth/AuthLogin";
@@ -49,6 +50,14 @@ export default function RoutesView() {
           element={
             <ProtectedRoute user={localUser}>
               <Lists />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/item/:listId"
+          element={
+            <ProtectedRoute user={localUser}>
+              <Items />
             </ProtectedRoute>
           }
         />
