@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import { Typography, Box } from "@mui/material";
-import { getAllItemsInList } from '../../Services/itemService';
+import { getAllItemsInList, getGroupIdByListId } from '../../Services/itemService';
+import {getAllGroupMembers} from "../../Services/listService";
+import PageHeader from "../../Common/PageHeader/PageHeader";
 
 const useStyles = makeStyles(() => ({
     margin: {
@@ -13,9 +15,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 
-const Items = (listId) => {
+const Items = () => {
 
     const [items, setItems] = useState(null);
+    const [groupId, setGroupId] = useState(null);
+    const [groupMembers, setGroupMembers] = useState(null);
     const params = useParams();
     const classes = useStyles();
 
@@ -25,18 +29,29 @@ const Items = (listId) => {
             setItems(res);
         })
     }, [params]);
-    
 
+    // get the groupId of the group to which this item belongs
+    useEffect(() => {
+        getGroupIdByListId(params.listId).then((res) => {
+            console.log(`Got groupId ${res} from listId`);
+            setGroupId(res);
+        })
+    }, [params]);
+    
+    // retrieve group members in the group to which this item belongs
+    useEffect(() => {
+        if (groupId) {
+            getAllGroupMembers(groupId).then((res) => {
+                console.log("Got group members in Items component");
+                setGroupMembers(res);
+            });
+        }
+    }, [params, groupId])
+    
+    // TODO: Future work - Make table for items and built out this page
     return (
         <Box>
-            <Typography
-            variant="h1"
-            sx={{ fontSize: 28, padding: 5, width: '50%' }}
-            gutterBottom
-            align={"left"}
-            >
-            Items Component
-            </Typography>
+            <PageHeader pageTitle={"Items Component"} groupMembers={groupMembers} />
             <Box className={classes.margin}>
                 {(items && items.length > 0) ? 
                 (

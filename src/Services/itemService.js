@@ -15,3 +15,15 @@ export const getAllItemsInList = async (listId) => {
         return res;
     });
 };
+
+// READ operation - retrieve the groupId for the group
+// that owns the provided listId
+export const getGroupIdByListId = async (listId) => {
+    const List = Parse.Object.extend("List");
+    const query = new Parse.Query(List);
+    query.equalTo("objectId", listId);
+    return query.find().then((res) => {
+        // return the groupId to which this list points
+        return res[0].attributes.group.id;
+    })
+}

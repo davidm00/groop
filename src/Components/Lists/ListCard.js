@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { CardContent, Typography, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import {getAllItemsInList} from "../../Services/itemService";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
