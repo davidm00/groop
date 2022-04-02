@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 
+import Account from "./Account/Account";
 import Groups from "./Groups/Groups";
 import Lists from "./Lists/Lists";
 import Items from "./Items/Items";
@@ -36,6 +37,14 @@ export default function RoutesView() {
         <Route
           path="/register"
           element={!localUser ? <AuthRegister /> : <Navigate to="/"/>}
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute user={localUser}>
+              <Account />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/groups"

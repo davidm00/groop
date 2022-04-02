@@ -89,6 +89,13 @@ const Navbar = () => {
             {localUser && (
               <Button
                 color="inherit"
+                sx={{
+                  visibility:
+                    (location.pathname === "/account" ||
+                      location.pathname === "/login" ||
+                      location.pathname === "/register") &&
+                    "hidden",
+                }}
                 onClick={() => {
                   logOut();
                   navigate("/login", { replace: true });
