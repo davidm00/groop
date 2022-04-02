@@ -1,6 +1,7 @@
 import React from "react";
 import { CardContent, Typography, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   listCard: {
@@ -20,11 +21,16 @@ const useStyles = makeStyles((theme) => ({
 const ListCard = ({ list }) => {
   const classes = useStyles();
   const { name } = list.attributes;
+  const navigate = useNavigate();
+
   // display list name
   return (
     <Box
       className={classes.listCard}
       sx={{ flexGrow: 1 }}
+      onClick={() => {
+        navigate(`/item/${list.id}`);
+      }}
     >
       <CardContent>
         <Typography variant="h1" sx={{ fontSize: 28 }} gutterBottom align={'center'}>
