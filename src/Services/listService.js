@@ -39,3 +39,12 @@ export const getAllGroupMembers = async (groupId) => {
     return member;
   });
 };
+
+// READ operation - get the name of the group with the specified groupId
+export const getGroupNameByGroupId = async (groupId) => {
+  const Group = Parse.Object.extend("Group");
+  const query = new Parse.Query(Group);
+  query.equalTo("objectId", groupId);
+  const group = await query.find();
+  return group[0].attributes.name;
+}

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { Typography, Box } from "@mui/material";
+import { Box } from "@mui/material";
+import PageHeader from "../../Common/PageHeader/PageHeader";
 
 import GroupCard from "./GroupCard";
 
@@ -35,9 +36,7 @@ const Groups = () => {
   // render the groups
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h1" sx={{ fontSize: 28, padding: 5 }} gutterBottom align={'left'}>
-      Groups Component
-        </Typography>
+      <PageHeader pageTitle={"Your Groups"} groupMembers={null} showGroupMembers={false}/>
       <Box sx={{ flexGrow: 1 }} className={classes.groupGrid}>
         {groups.map((group) => {
           return <GroupCard key={group.id} group={group} />;

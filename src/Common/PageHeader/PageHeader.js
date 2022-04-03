@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 5,
   },
   avatarsContainer: {
-    marginRight: "2em",
+    marginTop: "-1em",
     padding: "0.3em 1em 0.3em 1em",
     borderRadius: "1.2em",
     backgroundColor: "white",
@@ -33,10 +33,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   pageHeader: {
+    marginLeft: "13%",
+    marginRight: "13%",
+    marginTop: "4em",
+    marginBottom: "2em",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingRight: "1em",
   },
   modalStyle: {
     position: "absolute",
@@ -66,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PageHeader = ({ pageTitle, groupMembers }) => {
+const PageHeader = ({ pageTitle, groupMembers, showGroupMembers }) => {
   const classes = useStyles();
   const theme = useTheme();
   // for group members modal
@@ -79,152 +82,164 @@ const PageHeader = ({ pageTitle, groupMembers }) => {
 
   return (
     <Box>
-      <div>
-        <Modal
-          aria-labelledby="Group Members Modal"
-          aria-describedby="A list of the current members in this group"
-          open={open}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={open}>
-            <Box className={classes.modalStyle}>
-              <Box>
-                <Typography align="center" variant="h6">
-                  Group Members
-                </Typography>
-                <Box className={classes.closeButtonContainer}>
-                  <CloseIcon
-                    className={classes.closeButton}
-                    fontSize="small"
-                    onClick={handleClose}
-                  />
+      {showGroupMembers && (
+        <div>
+          <Modal
+            aria-labelledby="Group Members Modal"
+            aria-describedby="A list of the current members in this group"
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={open}>
+              <Box className={classes.modalStyle}>
+                <Box>
+                  <Typography align="center" variant="h6">
+                    Group Members
+                  </Typography>
+                  <Box className={classes.closeButtonContainer}>
+                    <CloseIcon
+                      className={classes.closeButton}
+                      fontSize="small"
+                      onClick={handleClose}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-              <MuiList
-                sx={{ maxHeight: 250, overflow: "auto", paddingTop: "1em" }}
-              >
-                {groupMembers &&
-                  groupMembers.map((member) => {
-                    return member.attributes.profilePhoto ? (
-                      <ListItem key={member}>
-                        <ListItemAvatar>
-                          <Avatar
-                            alt={member.attributes.username}
-                            key={member.email}
-                            src={member.attributes.profilePhoto._url}
+                <MuiList
+                  sx={{ maxHeight: 250, overflow: "auto", paddingTop: "1em" }}
+                >
+                  {groupMembers &&
+                    groupMembers.map((member) => {
+                      return member.attributes.profilePhoto ? (
+                        <ListItem key={member.attributes.username}>
+                          <ListItemAvatar>
+                            <Avatar
+                              alt={member.attributes.username}
+                              key={member.email}
+                              src={member.attributes.profilePhoto._url}
+                            />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={
+                              member.attributes.firstName +
+                              " " +
+                              member.attributes.lastName
+                            }
                           />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            member.attributes.firstName +
-                            " " +
-                            member.attributes.lastName
-                          }
-                        />
-                      </ListItem>
-                    ) : (
-                      <ListItem key={member}>
-                        <ListItemAvatar>
-                          <Avatar
-                            sx={{
-                              bgcolor: theme.palette.secondary.main,
-                              color: "white",
-                            }}
-                            alt={member.attributes.username}
-                            key={member.email}
-                          >
-                            {member.attributes.firstName[0] +
-                              member.attributes.lastName[0]}
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            member.attributes.firstName +
-                            " " +
-                            member.attributes.lastName
-                          }
-                        />
-                      </ListItem>
-                    );
-                  })}
-              </MuiList>
-            </Box>
-          </Fade>
-        </Modal>
-      </div>
-      <div className={classes.pageHeader}>
-        <Typography
-          variant="h1"
-          sx={{ fontSize: 28, padding: 5, width: "50%" }}
-          gutterBottom
-          align={"left"}
-        >
-          {pageTitle}
-        </Typography>
-        <div className={classes.avatarsContainer} onClick={handleOpen}>
-          {groupMembers ? (
-            <AvatarGroup max={4}>
-              {groupMembers.length > 0 ? (
-                groupMembers.map((member) => {
-                  console.log("Member Attributes: ", member.attributes);
-                  return member.attributes.profilePhoto ? (
-                    <Tooltip
-                      title={
-                        member.attributes.firstName +
-                        " " +
-                        member.attributes.lastName
-                      }
-                      arrow
-                    >
-                      <Avatar
-                        sx={{ width: "1.5em", height: "1.5em" }}
-                        alt={member.attributes.username}
-                        key={member.email}
-                        src={member.attributes.profilePhoto._url}
-                      />
-                    </Tooltip>
-                  ) : (
-                    <Tooltip
-                      title={
-                        member.attributes.firstName +
-                        " " +
-                        member.attributes.lastName
-                      }
-                      arrow
-                    >
-                      <Avatar
-                        sx={{
-                          bgcolor: theme.palette.secondary.main,
-                          color: theme.palette.primary.light,
-                          width: "1.5em",
-                          height: "1.5em",
-                        }}
-                        alt={member.attributes.username}
-                        key={member.email}
-                      >
-                        {member.attributes.firstName[0] +
-                          member.attributes.lastName[0]}
-                      </Avatar>
-                    </Tooltip>
-                  );
-                })
-              ) : (
-                <>No Group Members</>
-              )}
-            </AvatarGroup>
-          ) : (
-            <CircularProgress
-              color="secondary"
-              size={"1.5em"}
-              className={classes.loader}
-            />
-          )}
+                        </ListItem>
+                      ) : (
+                        <ListItem key={member.attributes.username}>
+                          <ListItemAvatar>
+                            <Avatar
+                              sx={{
+                                bgcolor: theme.palette.secondary.main,
+                                color: "white",
+                              }}
+                              alt={member.attributes.username}
+                              key={member.email}
+                            >
+                              {member.attributes.firstName[0] +
+                                member.attributes.lastName[0]}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={
+                              member.attributes.firstName +
+                              " " +
+                              member.attributes.lastName
+                            }
+                          />
+                        </ListItem>
+                      );
+                    })}
+                </MuiList>
+              </Box>
+            </Fade>
+          </Modal>
         </div>
+      )}
+      <div className={classes.pageHeader}>
+        {pageTitle ? (
+          <Typography
+            variant="h1"
+            sx={{ fontSize: 28, width: "75%" }}
+            gutterBottom
+            align={"left"}
+          >
+            {pageTitle}
+          </Typography>
+        ) : (
+          <CircularProgress
+            color="secondary"
+            size={"1.5em"}
+            className={classes.loader}
+          />
+        )}
+        {showGroupMembers && (
+          <div className={classes.avatarsContainer} onClick={handleOpen}>
+            {groupMembers ? (
+              <AvatarGroup max={4}>
+                {groupMembers.length > 0 ? (
+                  groupMembers.map((member) => {
+                    console.log("Member Attributes: ", member.attributes);
+                    return member.attributes.profilePhoto ? (
+                      <Tooltip
+                        title={
+                          member.attributes.firstName +
+                          " " +
+                          member.attributes.lastName
+                        }
+                        arrow
+                      >
+                        <Avatar
+                          sx={{ width: "1.5em", height: "1.5em" }}
+                          alt={member.attributes.username}
+                          key={member.email}
+                          src={member.attributes.profilePhoto._url}
+                        />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip
+                        title={
+                          member.attributes.firstName +
+                          " " +
+                          member.attributes.lastName
+                        }
+                        arrow
+                      >
+                        <Avatar
+                          sx={{
+                            bgcolor: theme.palette.secondary.main,
+                            color: theme.palette.primary.light,
+                            width: "1.5em",
+                            height: "1.5em",
+                          }}
+                          alt={member.attributes.username}
+                          key={member.email}
+                        >
+                          {member.attributes.firstName[0] +
+                            member.attributes.lastName[0]}
+                        </Avatar>
+                      </Tooltip>
+                    );
+                  })
+                ) : (
+                  <>No Group Members</>
+                )}
+              </AvatarGroup>
+            ) : (
+              <CircularProgress
+                color="secondary"
+                size={"1.5em"}
+                className={classes.loader}
+              />
+            )}
+          </div>
+        )}
       </div>
     </Box>
   );
