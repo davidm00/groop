@@ -477,7 +477,11 @@ export default function ItemTable({ listId }) {
                         >
                           {row.name}
                         </TableCell>
-                        <TableCell align="right">{row.price}</TableCell>
+                        <TableCell align="right">
+                          {row.price ? (row.price)
+                          : ("-")
+                          }
+                        </TableCell>
                         <TableCell align="right">
                           {row.purchased ? (
                             <Tooltip
