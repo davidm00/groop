@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+// import { makeStyles} from "@mui/styles";
 import { alpha } from "@mui/material/styles";
 import {
   Box,
@@ -37,46 +38,54 @@ import {
   getUsersFromSplitAmongRelation
 } from "../../Services/itemService";
 import { useTheme } from "@mui/styles";
+import ClickableAvatarList from "../../Common/ClickableAvatarList/ClickableAvatarList";
+
+// const useStyles = makeStyles((theme) => ({
+//   avatartListContainer: { 
+//     width: "50%",
+//     padding: "0.3em 1em 0.3em 1em",
+//     borderRadius: "1.2em",
+//     backgroundColor: "white",
+//     boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+//     "&:hover": {
+//       boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+//     },
+//   }
+// }));
 
 async function createData(item) {
-    console.log("In createData with item: ", item.attributes.name);
+  console.log("In createData with item: ", item.attributes.name);
   let purchaserName = null;
   let purchaserFirstName = null;
   let purchaserLastName = null;
   let purchaserPhotoUrl = null;
   let splitAmong = null;
   if (item.attributes.purchased) {
-      // try to get name and photo url of item purchaser
-      try {
-        await getUserNameByUserId(item.attributes.purchased.id).then((name) => {
-            purchaserName = name;
-        });
-        purchaserFirstName = purchaserName[0];
-        purchaserLastName = purchaserName[1];
-        purchaserName = purchaserName[0] + " " + purchaserName[1];
-      } catch (error) {
-        console.log("Error converting row data: ", error);
-      }
+    // try to get name and photo url of item purchaser
+    try {
+      await getUserNameByUserId(item.attributes.purchased.id).then((name) => {
+        purchaserName = name;
+      });
+      purchaserFirstName = purchaserName[0];
+      purchaserLastName = purchaserName[1];
+      purchaserName = purchaserName[0] + " " + purchaserName[1];
+    } catch (error) {
+      console.log("Error converting row data: ", error);
+    }
 
-      try {
-        await getUserPhotoUrlByUserId(item.attributes.purchased.id).then((photoUrl) => {
-            purchaserPhotoUrl = photoUrl;
-        });
-      } catch (error) {
-        console.log("Error converting row data: ", error);
-      }
+    try {
+      await getUserPhotoUrlByUserId(item.attributes.purchased.id).then(
+        (photoUrl) => {
+          purchaserPhotoUrl = photoUrl;
+        }
+      );
+    } catch (error) {
+      console.log("Error converting row data: ", error);
+    }
   }
   if (item.attributes.splitAmong) {
-      // TODO: try to get names and photo urls of item desirers
-      const users = await getUsersFromSplitAmongRelation(item.id);
-        if (users) {
-            splitAmong = users.map((user) => {
-                if (user.attributes.profilePhoto) {
-                    return [user.attributes.firstName, user.attributes.lastName, user.attributes.profilePhoto._url];
-                }
-                return [user.attributes.firstName, user.attributes.lastName, null];
-            })
-        }
+    // TODO: try to get names and photo urls of item desirers
+    splitAmong = await getUsersFromSplitAmongRelation(item.id);
   }
 
   const rowData = {
@@ -319,6 +328,7 @@ export default function ItemTable({ listId }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = useState([]);
   const theme = useTheme();
+  // const classes = useStyles();
 
   const deleteRow = (index) => {
     setRows(rows.filter((_, i) => i !== index));
@@ -327,29 +337,29 @@ export default function ItemTable({ listId }) {
   // feed items through the createData function to
   // get data objects for the rows state array
   const getRowData = async (items) => {
-      let theRowData = [];
-        for (let i = 0; i < items.length; i++) {
-            await createData(items[i]).then((rowData) => {
-                theRowData.push(rowData);
-            })
-        }
-        return theRowData;
-  }
+    let theRowData = [];
+    for (let i = 0; i < items.length; i++) {
+      await createData(items[i]).then((rowData) => {
+        theRowData.push(rowData);
+      });
+    }
+    return theRowData;
+  };
 
   useEffect(() => {
     getAllItemsInList(listId).then((res) => {
       console.log("Items in ItemTable Component: ", res);
       if (res.length === 1) {
-          // only 1 item, transform it, place it in an array,
-          // and set the rows state array
-          createData(res[0]).then((row) => {
-              setRows([row]);
-          })
+        // only 1 item, transform it, place it in an array,
+        // and set the rows state array
+        createData(res[0]).then((row) => {
+          setRows([row]);
+        });
       } else if (res.length > 1) {
-          // transform the items and set the rows state array
+        // transform the items and set the rows state array
         getRowData(res).then((rowData) => {
-            setRows(rowData);
-        })
+          setRows(rowData);
+        });
       }
     });
   }, [listId]);
@@ -470,10 +480,17 @@ export default function ItemTable({ listId }) {
                         <TableCell align="right">{row.price}</TableCell>
                         <TableCell align="right">
                           {row.purchased ? (
-                            <Tooltip title={"Purchased by " + row.purchaserName} arrow>
+                            <Tooltip
+                              title={"Purchased by " + row.purchaserName}
+                              arrow
+                            >
                               {row.purchaserPhotoUrl ? (
                                 <Avatar
-                                  sx={{ marginLeft: "80%", width: "1.5em", height: "1.5em" }}
+                                  sx={{
+                                    marginLeft: "80%",
+                                    width: "1.5em",
+                                    height: "1.5em",
+                                  }}
                                   alt={row.purchaserName}
                                   key={row.purchaserName}
                                   src={row.purchaserPhotoUrl}
@@ -495,12 +512,27 @@ export default function ItemTable({ listId }) {
                               )}
                             </Tooltip>
                           ) : (
-                            <Tooltip title={"Not yet purchased"} placement="bottom-end">
+                            <Tooltip
+                              title={"Not yet purchased"}
+                              placement="bottom-end"
+                            >
                               <Typography>No</Typography>
                             </Tooltip>
                           )}
                         </TableCell>
-                        <TableCell align="right">{"-"}</TableCell>
+                        <TableCell align="right">
+                          <Box>
+                            {row.splitAmong ? (
+                              <ClickableAvatarList
+                                users={row.splitAmong}
+                                modalTitle={row.name + " desired by:"}
+                                stringIfNoUsers={""}
+                              />
+                            ) : (
+                              "-"
+                            )}
+                          </Box>
+                        </TableCell>
                         <TableCell align="right">
                           <IconButton
                             onClick={() => {
