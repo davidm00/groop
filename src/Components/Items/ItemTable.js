@@ -268,7 +268,7 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected >= 2 && (
         <div style={{ display: "flex" }}>
-          <Tooltip title="Mark as Desired">
+          <Tooltip title="Toggle Desired">
             <IconButton>
               <PersonAddIcon />
             </IconButton>
@@ -292,7 +292,7 @@ const EnhancedTableToolbar = (props) => {
               <PhotoIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Mark as Desired">
+          <Tooltip title="Toggle Desired">
             <IconButton>
               <PersonAddIcon />
             </IconButton>
