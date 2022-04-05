@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/material";
@@ -11,15 +11,15 @@ import { getUsersGroups } from "../../Services/groupService";
 const useStyles = makeStyles(() => ({
   groupGrid: {
     margin: 20,
-    width: '100%',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 300px))',
-    gridTemplateRows: 'repeat(auto-fill, minmax(200px, 300px))',
-    display: 'grid',
-    justifyContent: 'center',
-    alignContent: 'end',
+    width: "100%",
+    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 300px))",
+    gridTemplateRows: "repeat(auto-fill, minmax(200px, 300px))",
+    display: "grid",
+    justifyContent: "center",
+    alignContent: "end",
     gridGap: 10,
   },
-}))
+}));
 
 // Parent Component of GroupCards
 const Groups = () => {
@@ -35,8 +35,17 @@ const Groups = () => {
 
   // render the groups
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <PageHeader pageTitle={"Your Groups"} groupMembers={null} showGroupMembers={false}/>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="start"
+      sx={{ padding: "5rem", flexGrow: 1 }}
+    >
+      <PageHeader
+        pageTitle={"Your Groups"}
+        groupMembers={null}
+        showGroupMembers={false}
+      />
       <Box sx={{ flexGrow: 1 }} className={classes.groupGrid}>
         {groups.map((group) => {
           return <GroupCard key={group.id} group={group} />;
