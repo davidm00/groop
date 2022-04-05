@@ -109,13 +109,13 @@ const PageHeader = ({ pageTitle, groupMembers }) => {
                 sx={{ maxHeight: 250, overflow: "auto", paddingTop: "1em" }}
               >
                 {groupMembers &&
-                  groupMembers.map((member) => {
+                  groupMembers.map((member, index) => {
                     return member.attributes.profilePhoto ? (
                       <ListItem key={member}>
                         <ListItemAvatar>
                           <Avatar
                             alt={member.attributes.username}
-                            key={member.email}
+                            key={index}
                             src={member.attributes.profilePhoto._url}
                           />
                         </ListItemAvatar>
@@ -136,7 +136,7 @@ const PageHeader = ({ pageTitle, groupMembers }) => {
                               color: "white",
                             }}
                             alt={member.attributes.username}
-                            key={member.email}
+                            key={index}
                           >
                             {member.attributes.firstName[0] +
                               member.attributes.lastName[0]}
@@ -170,10 +170,11 @@ const PageHeader = ({ pageTitle, groupMembers }) => {
           {groupMembers ? (
             <AvatarGroup max={4}>
               {groupMembers.length > 0 ? (
-                groupMembers.map((member) => {
+                groupMembers.map((member, index) => {
                   console.log("Member Attributes: ", member.attributes);
                   return member.attributes.profilePhoto ? (
                     <Tooltip
+                      key={index}
                       title={
                         member.attributes.firstName +
                         " " +
@@ -190,6 +191,7 @@ const PageHeader = ({ pageTitle, groupMembers }) => {
                     </Tooltip>
                   ) : (
                     <Tooltip
+                      key={index}
                       title={
                         member.attributes.firstName +
                         " " +

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Parse from "parse/lib/browser/Parse";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -15,6 +15,7 @@ import {
   ListItemText,
   ListItemIcon,
   Drawer,
+  Stack,
 } from "@mui/material";
 import {
   ArrowBack,
@@ -23,9 +24,12 @@ import {
   Settings,
   Drafts,
   Home,
+  ChevronLeft,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
 import { UserContext } from "../../Context/userContext";
+
+const font = "'Francois One', sans-serif";
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -36,6 +40,18 @@ const useStyles = makeStyles((theme) => ({
       boxSizing: "border-box",
       backgroundColor: theme.palette.secondary.main,
       color: "white",
+    },
+  },
+  navTitle: {
+    fontFamily: font,
+    height: "100%",
+    padding: "15px 10px",
+    boxShadow: 0,
+    transition: "boxShadow 1s",
+    "&:hover": {
+      // backgroundColor: theme.palette.secondary.dark,
+      boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.4)",
+      cursor: "pointer",
     },
   },
 }));
@@ -57,8 +73,12 @@ const Navbar = () => {
     setLocalUser(null);
   };
 
+  useEffect(() => {
+    console.log('Location changed');
+  }, [location]);
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box maxWidth={"100%"} sx={{ flexGrow: 1 }}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar
           className={classes.appBar}
@@ -66,44 +86,97 @@ const Navbar = () => {
           sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         >
           <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={() => toggleDrawer()}
+            <Stack
+              width={"100%"}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={4}
             >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <Button
-                disableElevation
-                variant="text"
+              <Stack
+                direction="row"
+                justifyContent="start"
+                alignItems="center"
+                spacing={0}
+              >
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="back"
+                  sx={{
+                    display:
+                      (location.pathname === "/" ||
+                        location.pathname === "/groups" ||
+                        location.pathname === "/login" ||
+                        location.pathname === "/register") &&
+                      "none",
+                  }}
+                  onClick={() => navigate(-1)}
+                >
+                  <ChevronLeft />
+                </IconButton>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  aria-label="menu"
+                  edge="start"
+                  sx={{ mr: 0 }}
+                  onClick={() => toggleDrawer()}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Stack>
+              <Typography
+                className={classes.navTitle}
+                variant="h6"
+                component="div"
+                m={2}
+                sx={{ flexGrow: 0 }}
                 onClick={() => navigate("/", { replace: true })}
-                startIcon={<Home />}
               >
                 Groop
-              </Button>
-            </Typography>
-            {localUser && (
-              <Button
-                color="inherit"
-                sx={{
-                  visibility:
-                    (location.pathname === "/account" ||
-                      location.pathname === "/login" ||
-                      location.pathname === "/register") &&
-                    "hidden",
-                }}
-                onClick={() => {
-                  logOut();
-                  navigate("/login", { replace: true });
-                }}
-              >
-                Log Out
-              </Button>
-            )}
+              </Typography>
+              {/* {localUser && (
+                <Typography
+                  sx={{
+                    display:
+                      (location.pathname !== "/account" ||
+                        location.pathname !== "/login" ||
+                        location.pathname !== "/register") &&
+                      "block",
+                  }}
+                ></Typography>
+              )} */}
+              {localUser ? (
+                <Button
+                  color="inherit"
+                  sx={{
+                    display:
+                      (location.pathname === "/account" ||
+                        location.pathname === "/login" ||
+                        location.pathname === "/register") &&
+                      "none",
+                  }}
+                  onClick={() => {
+                    logOut();
+                    navigate("/login", { replace: true });
+                  }}
+                >
+                  Log Out
+                </Button>
+              ) : (
+                <Typography
+                // sx={{
+                //   display:
+                //     (location.pathname == "/account" ||
+                //       location.pathname !== "/login" ||
+                //       location.pathname !== "/register") &&
+                //     "block",
+                // }}
+                ></Typography>
+              )}
+            </Stack>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -153,7 +226,7 @@ const Navbar = () => {
           </Box>
         </Drawer>
       </Box>
-      <Button
+      {/* <Button
         sx={{
           top: 65,
           left: 0,
@@ -169,7 +242,7 @@ const Navbar = () => {
         color="inherit"
       >
         <ArrowBack /> Back
-      </Button>
+      </Button> */}
     </Box>
   );
 };
