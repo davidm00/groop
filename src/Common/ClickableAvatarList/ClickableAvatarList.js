@@ -150,7 +150,6 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
           <AvatarGroup max={3}>
             {users.length > 0 ? (
               users.map((user) => {
-                console.log("User Attributes: ", user.attributes);
                 return user.attributes.profilePhoto ? (
                   <Tooltip
                     title={

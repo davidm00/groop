@@ -1,4 +1,3 @@
-import { NineKOutlined } from "@mui/icons-material";
 import Parse from "parse";
 
 // READ operation - get all items from the 
@@ -47,7 +46,7 @@ export const getUserPhotoUrlByUserId = async (userId) => {
     const query = new Parse.Query(User);
     query.equalTo("objectId", userId);
     const user = await query.find();
-    if (user.length > 0) {
+    if (user.length > 0 && user[0].attributes.profilePhoto) {
         return user[0].attributes.profilePhoto._url;
     }
     return null;
@@ -68,8 +67,9 @@ export const getUserNameByUserId = async (userId) => {
     return null;
 }
 
-// READ operation = get the users from the 'splitAmong' relation
+// READ operation - get the users from the 'splitAmong' relation
 // of the specified item
+// Returns: a list of users (can be empty)
 export const getUsersFromSplitAmongRelation = async (itemId) => {
   const Item = Parse.Object.extend("Item");
   const query = new Parse.Query(Item);
@@ -83,12 +83,178 @@ export const getUsersFromSplitAmongRelation = async (itemId) => {
     },
     error: function (e) {
         console.log("Error in getUsersFromSplitAmongRelation: ", e);
-        return null;
+        return [];
     }
   })
-  return users ? users.map((member) => {
-    console.log("User in splitAmong relation: ", member.attributes.firstName, " ", member.attributes.lastName);
+  return users.length >= 1 ? users.map((member) => {
     // May return different info here in the future, such as an image url, etc.
     return member;
-  }) : null;
+  }) : [];
+}
+
+// WRITE operation - set item as purchased by the provided userId
+// Returns: -1 if unsuccessful, 0 if successful
+export const setItemAsPurchasedByUserId = async (itemId, userId) => {
+    const User = Parse.Object.extend("_User");
+    const query1 = new Parse.Query(User);
+    query1.equalTo("objectId", userId);
+    const user = await query1.find();
+    if (user.length === 0) {
+        console.log("Issue retrieving user object to point purchased field towards");
+        return -1;
+    }
+    const Item = Parse.Object.extend("Item");
+    const query2 = new Parse.Query(Item);
+    query2.equalTo("objectId", itemId);
+    const item = await query2.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (item === null) {
+        return -1;
+    }
+    const result = await item.save({purchased: user[0]});
+    if (result.attributes.purchased === user[0]) {
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+// WRITE operation - set item as not purchased
+// Returns: -1 if unsuccessful, 0 if successful
+export const setItemAsNotPurchased = async (itemId) => {
+    const Item = Parse.Object.extend("Item");
+    const query = new Parse.Query(Item);
+    query.equalTo("objectId", itemId);
+    const item = await query.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (item === null) {
+        return -1;
+    }
+    const result = await item.save({purchased: null});
+    if (result.attributes.purchased === null) {
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+
+// WRITE operation - set item as desired by the provided user
+// Returns: the users in the splitAmong relation (or an empty list if there are none) 
+//          if successful, null otherwise
+export const setItemAsDesiredByUser = async (itemId, userId) => {
+    // grab the item from the database
+    const Item = Parse.Object.extend("Item");
+    const query1 = new Parse.Query(Item);
+    query1.equalTo("objectId", itemId);
+    const item = await query1.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (item === null) {
+        return null;
+    }
+    // grab the splitAmong relation from the item
+    const splitAmongRelation = item.relation("splitAmong");
+    // grab the user from the database
+    const User = Parse.Object.extend("_User");
+    const query2 = new Parse.Query(User);
+    query2.equalTo("objectId", userId);
+    const user = await query2.find();
+    // try to add the user to the splitAmong relation
+    splitAmongRelation.add(user);
+    try {
+        await item.save();
+        return await getUsersFromSplitAmongRelation(itemId);
+    } catch (error) {
+        console.log("Error saving User to splitAmong relation: ", error);
+        return null;
+    }
+}
+
+// WRITE operation - set item as not desired by the provided user
+// Returns: the users in the splitAmong relation (or an empty list if there are none) 
+//          if successful, null otherwise
+export const setItemAsNotDesiredByUser = async (itemId, userId) => {
+    // grab the item from the database
+    const Item = Parse.Object.extend("Item");
+    const query1 = new Parse.Query(Item);
+    query1.equalTo("objectId", itemId);
+    const item = await query1.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (item === null) {
+        return null;
+    }
+    // grab the splitAmong relation from the item
+    const splitAmongRelation = item.relation("splitAmong");
+    // grab the user from the database
+    const User = Parse.Object.extend("_User");
+    const query2 = new Parse.Query(User);
+    query2.equalTo("objectId", userId);
+    const user = await query2.find();
+    // try to remove the user from the splitAmong relation
+    splitAmongRelation.remove(user);
+    try {
+        await item.save();
+        return await getUsersFromSplitAmongRelation(itemId);
+    } catch (error) {
+        console.log("Error removing User from splitAmong relation: ", error);
+        return null;
+    }
+}
+
+// WRITE opeartion - delete the item from the database
+// Returns: 0 on success, -1 on failure
+export const deleteItemById = async (itemId) => {
+    // grab the item from the database
+    const Item = Parse.Object.extend("Item");
+    const query1 = new Parse.Query(Item);
+    query1.equalTo("objectId", itemId);
+    const item = await query1.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (item === null) {
+        return -1;
+    }
+    try{
+        // delete the item
+        let result = await item.destroy();
+        console.log('Object deleted with objectId: ' + result.id);
+        return 0;
+    } catch(error) {
+        alert('Failed to delete object, with error code: ' + error.message);
+        return -1;
+    }
 }
