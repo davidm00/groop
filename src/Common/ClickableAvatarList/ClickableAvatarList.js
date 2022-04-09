@@ -42,20 +42,6 @@ const useStyles = makeStyles((theme) => ({
   modalTitle: {
     maxWidth: "80%"
   },
-  closeButtonContainer: {
-    display: "flex",
-    justifyContent: "flex-end",
-    marginTop: "-2em",
-  },
-  closeButton: {
-    backgroundColor: "darkGray",
-    color: "white",
-    borderRadius: "50%",
-    boxShadow: " 0 2px 4px 0 rgba(0, 0, 0, 0.2)",
-    "&:hover": {
-      backgroundColor: "gray",
-    },
-  },
 }));
 
 const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {

@@ -23,6 +23,10 @@ import {
   Avatar,
   Alert,
   AlertTitle,
+  Backdrop,
+  Button,
+  Modal,
+  Fade
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -46,22 +50,36 @@ import {
   setItemAsNotDesiredByUser,
   deleteItemById
 } from "../../Services/itemService";
-import { useTheme } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import ClickableAvatarList from "../../Common/ClickableAvatarList/ClickableAvatarList";
 import { UserContext } from "../../Context/userContext";
 
-// const useStyles = makeStyles((theme) => ({
-//   avatartListContainer: {
-//     width: "50%",
-//     padding: "0.3em 1em 0.3em 1em",
-//     borderRadius: "1.2em",
-//     backgroundColor: "white",
-//     boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
-//     "&:hover": {
-//       boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
-//     },
-//   }
-// }));
+const useStyles = makeStyles((theme) => ({
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "350",
+    backgroundColor: "white",
+    color: theme.palette.text.primary,
+    p: 4,
+    borderRadius: "0.5em",
+    padding: "1em",
+  },
+  centered: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+  },
+  modalTitle: {
+    maxWidth: "80%"
+  },
+  itemImage: {
+    maxWidth: "250",
+    maxHeight: "250"
+  }
+}));
 
 async function transformData(item) {
   console.log("In transformData with item: ", item.attributes.name);
@@ -105,6 +123,7 @@ async function transformData(item) {
     price: item.attributes.price,
     purchased: item.attributes.purchased ? true : false,
     splitAmong: splitAmong,
+    itemPhotoUrl: item.attributes.photo ? item.attributes.photo._url : null,
     purchaserId: purchaserId,
     purchaserName: purchaserName,
     purchaserFirstName: purchaserFirstName,
@@ -247,6 +266,7 @@ const EnhancedTableToolbar = (props) => {
     selected,
     localUser,
     onRefresh,
+    onItemModalOpen,
     onMarkAsNeeded,
     onMarkAsPurchased,
     onToggleDesired
@@ -329,11 +349,13 @@ const EnhancedTableToolbar = (props) => {
               <EditIcon />
             </IconButton>
           </Tooltip>
+          {rows[selected[0]] && rows[selected[0]].itemPhotoUrl && (
           <Tooltip title="View Photo">
-            <IconButton>
+            <IconButton onClick={onItemModalOpen}>
               <PhotoIcon />
             </IconButton>
           </Tooltip>
+          )}
           <Tooltip title="Toggle Desired">
             <IconButton onClick={onToggleDesired}>
               <PersonAddIcon />
@@ -377,6 +399,7 @@ EnhancedTableToolbar.propTypes = {
   rows: PropTypes.object.isRequired,
   selected: PropTypes.object.isRequired,
   localUser: PropTypes.object.isRequired,
+  onItemModalOpen: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   onMarkAsNeeded: PropTypes.func.isRequired,
   onMarkAsPurchased: PropTypes.func.isRequired,
@@ -395,8 +418,7 @@ export default function ItemTable({ listId }) {
   const [refresh, setRefresh] = useState(false);
   const theme = useTheme();
   const { localUser } = useContext(UserContext);
-  console.log("localUser: ", localUser);
-  // const classes = useStyles();
+  const classes = useStyles();
 
   // feed items through the transformData function to
   // get data objects for the rows state array
@@ -499,12 +521,10 @@ export default function ItemTable({ listId }) {
   // First try to update the item(s) in the database,
   // then update the row(s) in state if successful.
   const onMarkAsNeeded = async () => {
-    console.log("will try to mark as needed: ", selected);
     let successfullyUpdatedItems = [];
     let unsuccessfullyUpdatedItems = [];
     for (let i = 0; i < selected.length; i++) {
       const rc = await setItemAsNotPurchased(selected[i]);
-      console.log("rc: ", rc);
       if (rc === 0) {
         successfullyUpdatedItems.push(selected[i]);
       } else {
@@ -535,12 +555,10 @@ export default function ItemTable({ listId }) {
   // First try to update the item(s) in the database,
   // then update the row(s) in state if successful.
   const onMarkAsPurchased = async () => {
-    console.log("will try to mark as purchased: ", selected);
     let successfullyUpdatedItems = [];
     let unsuccessfullyUpdatedItems = [];
     for (let i = 0; i < selected.length; i++) {
       const rc = await setItemAsPurchasedByUserId(selected[i], localUser.id);
-      console.log("rc: ", rc);
       if (rc === 0) {
         successfullyUpdatedItems.push(selected[i]);
       } else {
@@ -674,8 +692,6 @@ export default function ItemTable({ listId }) {
     }
   };
 
-
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -684,13 +700,48 @@ export default function ItemTable({ listId }) {
       ? Math.max(0, (1 + page) * rowsPerPage - Object.keys(rows).length)
       : 0;
 
+  // for modal
+  const [open, setOpen] = useState(false);
+  const handleItemModalOpen = () => setOpen(true);
+  const handleItemModalClose = () => setOpen(false);
+
   return (
     <Box sx={{ width: "100%" }}>
+      <div>
+        <Modal
+          aria-labelledby="Modal showing image of item"
+          aria-describedby="Modal showing image of item"
+          open={open}
+          onClose={handleItemModalClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={open}>
+            <Box className={classes.modalStyle}>
+              <Box className={classes.centered}>
+                <Typography className={classes.modalTitle} variant="h6">
+                  {rows[selected[0]] ? (rows[selected[0]].name) : null}
+                </Typography>
+              </Box>
+              <Box className={classes.centered}>
+                <img className={classes.itemImage} alt={rows[selected[0]] ? rows[selected[0]].name : ""} src={rows[selected[0]] ? rows[selected[0]].itemPhotoUrl : null} />
+              </Box>
+              <Box className={classes.centered}>
+                <Button variant="outlined" onClick={handleItemModalClose}>Close</Button>
+              </Box>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar
           rows={rows}
           selected={selected}
           localUser={localUser}
+          onItemModalOpen={handleItemModalOpen}
           onRefresh={onRefresh}
           onMarkAsNeeded={onMarkAsNeeded}
           onMarkAsPurchased={onMarkAsPurchased}

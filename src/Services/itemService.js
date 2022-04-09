@@ -2,7 +2,6 @@ import Parse from "parse";
 
 // READ operation - get all items from the 
 export const getAllItemsInList = async (listId) => {
-    console.log("listId in getAllItemsInList: ", listId);
     const Item = Parse.Object.extend("Item");
     const query = new Parse.Query(Item);
     query.equalTo("list", {
@@ -75,7 +74,6 @@ export const getUsersFromSplitAmongRelation = async (itemId) => {
   const query = new Parse.Query(Item);
   query.equalTo("objectId", itemId);
   const item = await query.find();
-  console.log("item in getUsersFromSplitAmongRelation: ", item);
   const relation = item[0].relation("splitAmong");
   const users = await relation.query().find({
     success: function (users) {
