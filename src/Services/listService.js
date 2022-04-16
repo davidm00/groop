@@ -41,3 +41,19 @@ export const getGroupNameByGroupId = async (groupId) => {
   const group = await query.find();
   return group[0].attributes.name;
 }
+
+// READ operation - get a list object by its id
+// Returns: list object on success, null on failure
+export const getListById = async (listId) => {
+  const List = Parse.Object.extend("List");
+  const query = new Parse.Query(List);
+  query.equalTo("objectId", listId);
+  let list = await query.find();
+  if (list) {
+      list = list[0];
+      console.log("list[0]: ", list);
+      return list;
+  } else {
+      return null;
+  }
+}

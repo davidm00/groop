@@ -79,7 +79,7 @@ const Navbar = () => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               <Button
                 disableElevation
-                variant="text"
+                variant="standard"
                 onClick={() => navigate("/", { replace: true })}
                 startIcon={<Home />}
               >
@@ -88,7 +88,7 @@ const Navbar = () => {
             </Typography>
             {localUser && (
               <Button
-                color="inherit"
+                variant="standard"
                 sx={{
                   visibility:
                     (location.pathname === "/account" ||
@@ -166,7 +166,7 @@ const Navbar = () => {
             "hidden",
         }}
         onClick={() => navigate(-1)}
-        color="inherit"
+        variant="standard"
       >
         <ArrowBack /> Back
       </Button>

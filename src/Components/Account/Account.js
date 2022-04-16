@@ -135,7 +135,7 @@ const Account = () => {
               accept="image/*"
               onChange={selectFile}
             />
-            <Button className="btn-choose" variant="outlined" component="span">
+            <Button className="btn-choose" variant="standard" component="span">
               Choose Image
             </Button>
           </label>
@@ -211,11 +211,11 @@ const Account = () => {
               {showPassword ? <VisibilityOff /> : <Visibility />}
             </IconButton>
           </Stack>
-          <Button sx={{ m: 1, width: "25ch" }} color="inherit" onClick={reset}>
+          <Button sx={{ m: 1, width: "25ch" }} variant="standard" onClick={reset}>
             Change password
           </Button>
         </Stack>
-        <Button color="inherit" onClick={() => logOut()}>
+        <Button variant="standard" onClick={() => logOut()}>
           Log Out
         </Button>
       </Stack>

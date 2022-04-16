@@ -56,16 +56,30 @@ export const primaryTheme = createTheme({
       },
     },
     MuiButton: {
-      styleOverrides: {
-        root: {
-          backgroundColor: pDark,
-          color: "white",
-          "&:hover": {
-            backgroundColor: pMain,
-            boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
-          },
+      variants: [
+        {
+          props: {variant: "standard"},
+          style: {
+            backgroundColor: pDark,
+            color: "white",
+            "&:hover": {
+              backgroundColor: pMain,
+              boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+            }
+          }
         },
-      },
+        {
+          props: {variant: "submit"},
+          style: {
+            backgroundColor: sDark,
+            color: "white",
+            "&:hover": {
+              backgroundColor: sMain,
+              boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+            }
+          }
+        }
+      ],
     },
   },
 });

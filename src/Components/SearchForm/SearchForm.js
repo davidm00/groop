@@ -8,10 +8,10 @@ export default function SearchForm({ searchFormOnSubmit, searchFormOnClear }) {
     <form onSubmit="false" className="searchForm">
       <input className="searchFormInput" type="text" id="title" placeholder="Search for a list..."></input>
       <br />
-      <button className="searchFormButton" type="submit" onClick={(e) => {
+      <button className="searchFormButton" variant="submit" onClick={(e) => {
         searchFormOnSubmit(e);
       }}>Search</button>
-      <button className="searchFormButton" type="submit" onClick={(e) => {
+      <button className="searchFormButton" variant="standard" onClick={(e) => {
         searchFormOnClear(e);
       }}>Clear</button>
     </form>

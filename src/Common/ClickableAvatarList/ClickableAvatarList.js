@@ -125,7 +125,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                   })}
               </MuiList>
               <Box className={classes.centered}>
-                <Button variant="outlined" onClick={handleClose}>Close</Button>
+                <Button variant="standard" onClick={handleClose}>Close</Button>
               </Box>
             </Box>
           </Fade>

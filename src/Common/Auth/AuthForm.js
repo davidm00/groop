@@ -121,16 +121,22 @@ const AuthForm = ({ type, user, onChange, onSubmit }) => {
             alignItems="center"
             spacing={2}
           >
-            <Button onClick={() => navigate("/", { replace: true })}>
+            <Button 
+              variant="standard"
+              onClick={() => navigate("/", { replace: true })}>
               Back
             </Button>
             {type === "register" && (
-              <Button onClick={() => navigate("/login", { replace: true })}>
+              <Button 
+                variant="standard"
+                onClick={() => navigate("/login", { replace: true })}>
                 Login
               </Button>
             )}
             {type === "login" && (
-              <Button onClick={() => navigate("/register", { replace: true })}>
+              <Button 
+                variant="standard"
+                onClick={() => navigate("/register", { replace: true })}>
                 Register
               </Button>
             )}

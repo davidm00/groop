@@ -48,11 +48,13 @@ import {
   setItemAsNotPurchased,
   setItemAsDesiredByUser,
   setItemAsNotDesiredByUser,
-  deleteItemById
+  deleteItemById,
+  createItemWithAttributes
 } from "../../Services/itemService";
 import { makeStyles, useTheme } from "@mui/styles";
 import ClickableAvatarList from "../../Common/ClickableAvatarList/ClickableAvatarList";
 import { UserContext } from "../../Context/userContext";
+import ModalForm from "../../Common/ModalForm/ModalForm.js";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -60,24 +62,34 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "350",
+    width: "350px",
     backgroundColor: "white",
     color: theme.palette.text.primary,
     p: 4,
     borderRadius: "0.5em",
     padding: "1em",
   },
-  centered: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "center",
-  },
   modalTitle: {
-    maxWidth: "80%"
+    marginLeft: "10%",
+    maxWidth: "80%",
+    textAlign: "center"
   },
   itemImage: {
-    maxWidth: "250",
-    maxHeight: "250"
+    width: "250px",
+    height: "250px"
+  },
+  modalContent: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    maxWidth: "90%",
+    marginLeft: "5%",
+  }, 
+  centered: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   }
 }));
 
@@ -266,7 +278,9 @@ const EnhancedTableToolbar = (props) => {
     selected,
     localUser,
     onRefresh,
-    onItemModalOpen,
+    onItemPhotoModalOpen,
+    onCreateItemModalOpen,
+    onEditItemModalOpen,
     onMarkAsNeeded,
     onMarkAsPurchased,
     onToggleDesired
@@ -313,11 +327,6 @@ const EnhancedTableToolbar = (props) => {
               <RefreshIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Toggle Desired">
-            <IconButton onClick={onToggleDesired}>
-              <PersonAddIcon />
-            </IconButton>
-          </Tooltip>
           {selected.filter((itemId, i) => (rows[itemId] && rows[itemId].purchased === true))
             .length !== 0 && (
             <Tooltip title="Mark as Needed">
@@ -326,6 +335,11 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title="Toggle Desired">
+            <IconButton onClick={onToggleDesired}>
+              <PersonAddIcon />
+            </IconButton>
+          </Tooltip>
           {selected.filter(
             (itemId, i) => (rows[itemId] && rows[itemId].purchaserId !== localUser.id)
           ).length !== 0 && (
@@ -345,22 +359,17 @@ const EnhancedTableToolbar = (props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit Item">
-            <IconButton>
+            <IconButton onClick={onEditItemModalOpen}>
               <EditIcon />
             </IconButton>
           </Tooltip>
           {rows[selected[0]] && rows[selected[0]].itemPhotoUrl && (
           <Tooltip title="View Photo">
-            <IconButton onClick={onItemModalOpen}>
+            <IconButton onClick={onItemPhotoModalOpen}>
               <PhotoIcon />
             </IconButton>
           </Tooltip>
           )}
-          <Tooltip title="Toggle Desired">
-            <IconButton onClick={onToggleDesired}>
-              <PersonAddIcon />
-            </IconButton>
-          </Tooltip>
           {rows[selected[0]] && rows[selected[0]].purchased && (
             <Tooltip title="Mark as Needed">
               <IconButton onClick={onMarkAsNeeded}>
@@ -368,6 +377,11 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title="Toggle Desired">
+            <IconButton onClick={onToggleDesired}>
+              <PersonAddIcon />
+            </IconButton>
+          </Tooltip>
           {rows[selected[0]] && rows[selected[0]].purchaserId !== localUser.id && (
             <Tooltip title="Mark as Purchased">
               <IconButton onClick={onMarkAsPurchased}>
@@ -385,7 +399,7 @@ const EnhancedTableToolbar = (props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Create Item">
-            <IconButton>
+            <IconButton onClick={onCreateItemModalOpen}>
               <AddIcon />
             </IconButton>
           </Tooltip>
@@ -397,9 +411,11 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
   rows: PropTypes.object.isRequired,
-  selected: PropTypes.object.isRequired,
+  selected: PropTypes.array.isRequired,
   localUser: PropTypes.object.isRequired,
-  onItemModalOpen: PropTypes.func.isRequired,
+  onItemPhotoModalOpen: PropTypes.func.isRequired,
+  onCreateItemModalOpen: PropTypes.func.isRequired,
+  onEditItemModalOpen: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   onMarkAsNeeded: PropTypes.func.isRequired,
   onMarkAsPurchased: PropTypes.func.isRequired,
@@ -700,10 +716,48 @@ export default function ItemTable({ listId }) {
       ? Math.max(0, (1 + page) * rowsPerPage - Object.keys(rows).length)
       : 0;
 
-  // for modal
-  const [open, setOpen] = useState(false);
-  const handleItemModalOpen = () => setOpen(true);
-  const handleItemModalClose = () => setOpen(false);
+  // for item modal
+  const [itemPhotoModalOpen, setItemPhotoModalOpen] = useState(false);
+  const handleItemPhotoModalOpen = () => setItemPhotoModalOpen(true);
+  const handleItemPhotoModalClose = () => setItemPhotoModalOpen(false);
+
+  // for create item modal
+  const [createItemModalOpen, setCreateItemModalOpen] = useState(false);
+  const handleCreateItemModalOpen = () => setCreateItemModalOpen(true);
+  const handleCreateItemModalClose = () => setCreateItemModalOpen(false);
+  const onCreateItemFormSubmit = async (attrs) => {
+    console.log("Handling create item modal submit with attrs: ", attrs);
+    const itemName = attrs.name;
+    const price = Number.parseFloat(attrs.price);
+    const itemPhotoData = attrs.itemPhoto.currentFile;
+    const purchaserId = attrs.markAsPurchased ? localUser.id : null;
+    const desirerId = attrs.markAsDesired ? localUser.id : null;
+    const itemObject = await createItemWithAttributes(
+      itemName, price, itemPhotoData, purchaserId, desirerId, listId
+    );
+    if (itemObject !== null) {
+      // success: update local rows state variable (avoid costly refresh call)
+      console.log("new itemObject: ", itemObject);
+      const rowData = await transformData(itemObject);
+      setRows({...rows, [itemObject.id] : rowData});
+    } else {
+      // error: alert user
+      setErrorMessage(`Failed to create new item: ${attrs.name}`);
+    }
+    setCreateItemModalOpen(false)
+  }
+
+  // for edit item modal
+  const [editItemModalOpen, setEditItemModalOpen] = useState(false);
+  const handleEditItemModalOpen = () => setEditItemModalOpen(true);
+  const handleEditItemModalClose = () => setEditItemModalOpen(false);
+  const onEditItemFormSubmit = (newAttrs) => {
+    // TODO: call refresh in here or edit rows on success
+    console.log("Handling edit item modal submit with newAttrs: ", newAttrs);
+    setEditItemModalOpen(false);
+  }
+
+
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -711,26 +765,90 @@ export default function ItemTable({ listId }) {
         <Modal
           aria-labelledby="Modal showing image of item"
           aria-describedby="Modal showing image of item"
-          open={open}
-          onClose={handleItemModalClose}
+          open={itemPhotoModalOpen}
+          onClose={handleItemPhotoModalClose}
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
             timeout: 500,
           }}
         >
-          <Fade in={open}>
+          <Fade in={itemPhotoModalOpen}>
             <Box className={classes.modalStyle}>
-              <Box className={classes.centered}>
-                <Typography className={classes.modalTitle} variant="h6">
+              <Box className={classes.modalTitle}>
+                <Typography variant="h6">
                   {rows[selected[0]] ? (rows[selected[0]].name) : null}
                 </Typography>
               </Box>
-              <Box className={classes.centered}>
-                <img className={classes.itemImage} alt={rows[selected[0]] ? rows[selected[0]].name : ""} src={rows[selected[0]] ? rows[selected[0]].itemPhotoUrl : null} />
+              <Box className={classes.modalContent}>
+                <img 
+                  className={classes.itemImage} 
+                  alt={rows[selected[0]] ? rows[selected[0]].name : ""} 
+                  src={rows[selected[0]] ? rows[selected[0]].itemPhotoUrl : null} 
+                />
+                <Button variant="standard" onClick={handleItemPhotoModalClose}>Close</Button>
               </Box>
-              <Box className={classes.centered}>
-                <Button variant="outlined" onClick={handleItemModalClose}>Close</Button>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
+      <div>
+        <Modal
+          aria-labelledby="Modal for creating an item"
+          aria-describedby="Modal for creating an item"
+          open={createItemModalOpen}
+          onClose={handleCreateItemModalClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={createItemModalOpen}>
+            <Box className={classes.modalStyle}>
+              <Box className={classes.modalTitle}>
+                <Typography variant="h6">Create a New Item</Typography>
+              </Box> 
+              <Box className={classes.modalContent}>
+                 
+                {/* {TODO: Form for editing items} */}
+                <ModalForm 
+                  formType={"CREATE_ITEM"}
+                  onSubmit={onCreateItemFormSubmit}
+                  onClose={handleCreateItemModalClose}
+                  attributes={null}  
+                />
+              </Box>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
+      <div>
+        <Modal  
+          aria-labelledby="Modal for editing an item"
+          aria-describedby="Modal for editing an item"
+          open={editItemModalOpen}
+          onClose={handleEditItemModalClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={editItemModalOpen}>
+            <Box className={classes.modalStyle}>
+              <Box className={classes.modalTitle}>
+                <Typography variant="h6">Edit Item: {rows[selected[0]] ? rows[selected[0]].name : ""}</Typography>
+              </Box>
+              <Box className={classes.modalContent}>
+                
+                {/* {TODO: Form for editing items} */}
+                <ModalForm 
+                  formType={"EDIT_ITEM"} 
+                  onSubmit={onEditItemFormSubmit}
+                  onClose={handleEditItemModalClose}
+                  attributes={rows[selected[0]] ? rows[selected[0]] : null}
+                />
               </Box>
             </Box>
           </Fade>
@@ -741,7 +859,9 @@ export default function ItemTable({ listId }) {
           rows={rows}
           selected={selected}
           localUser={localUser}
-          onItemModalOpen={handleItemModalOpen}
+          onItemPhotoModalOpen={handleItemPhotoModalOpen}
+          onCreateItemModalOpen={handleCreateItemModalOpen}
+          onEditItemModalOpen={handleEditItemModalOpen}
           onRefresh={onRefresh}
           onMarkAsNeeded={onMarkAsNeeded}
           onMarkAsPurchased={onMarkAsPurchased}
@@ -854,7 +974,7 @@ export default function ItemTable({ listId }) {
                         </TableCell>
                         <TableCell align="right">
                           <Box>
-                            {row.splitAmong.length > 0 ? (
+                            {row.splitAmong && row.splitAmong.length > 0 ? (
                               <ClickableAvatarList
                                 users={row.splitAmong}
                                 modalTitle={row.name + " desired by:"}

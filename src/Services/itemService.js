@@ -1,4 +1,6 @@
 import Parse from "parse";
+import {getUserById} from "./userService";
+import {getListById} from "./listService";
 
 // READ operation - get all items from the 
 export const getAllItemsInList = async (listId) => {
@@ -227,7 +229,7 @@ export const setItemAsNotDesiredByUser = async (itemId, userId) => {
     }
 }
 
-// WRITE opeartion - delete the item from the database
+// WRITE operation - delete the item from the database
 // Returns: 0 on success, -1 on failure
 export const deleteItemById = async (itemId) => {
     // grab the item from the database
@@ -252,7 +254,51 @@ export const deleteItemById = async (itemId) => {
         console.log('Object deleted with objectId: ' + result.id);
         return 0;
     } catch(error) {
-        alert('Failed to delete object, with error code: ' + error.message);
+        console.log('Failed to delete object, with error code: ' + error.message);
         return -1;
     }
+}
+
+// WRITE operation - create a new item with the provided data
+// Returns: object on success, null on failure
+export const createItemWithAttributes = async (
+    name, price, itemPhotoData, purchaserId, desirerId, listId
+    ) => {
+    // if listId doesn't exist, we can exit early
+    if (!listId) {
+        return null;
+    }
+    const listPointer = new Parse.Object("List");
+    listPointer.set("objectId", listId);
+    const noOp = () => {};
+    const item = new Parse.Object("Item");
+    item.set("list", listPointer);
+    item.set("name", name);
+    price ? item.set("price", price) : noOp();
+    if (itemPhotoData) {
+        let parseFile = new Parse.File(itemPhotoData.name, itemPhotoData);
+        item.set("photo", parseFile);
+    }
+    if (purchaserId) {
+        // retrieve the _User object and point to it in the 'desired' field
+        const user = await getUserById(purchaserId);
+        user ? item.set("purchased", user) : noOp();
+    }
+    if (desirerId) {
+        // retrieve the _User object and add it to the splitAmong relation
+        // for the item object
+        let splitAmongRelation = item.relation("splitAmong");
+        const user = await getUserById(desirerId);
+        user ? splitAmongRelation.add(user) : noOp();
+    }
+    try{
+        // save the Object
+        let result = await item.save()
+        console.log('New Item object created with objectId: ' + result.id);
+        return result;
+    } catch(error) {
+        console.log('Failed to create new Item object, with error code: ' + error.message);
+        return null;
+    }
+    
 }
