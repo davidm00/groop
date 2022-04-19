@@ -115,11 +115,12 @@ export const setItemAsPurchasedByUserId = async (itemId, userId) => {
             return null;
         }
     });
-    if (item === null) {
+    if (!item) {
         return -1;
     }
     const result = await item.save({purchased: user[0]});
     if (result.attributes.purchased === user[0]) {
+        console.log("Success marking item as purchased by user");
         return 0;
     } else {
         return -1;
@@ -141,7 +142,7 @@ export const setItemAsNotPurchased = async (itemId) => {
             return null;
         }
     });
-    if (item === null) {
+    if (!item) {
         return -1;
     }
     const result = await item.save({purchased: null});
@@ -208,11 +209,14 @@ export const setItemAsNotDesiredByUser = async (itemId, userId) => {
             return null;
         }
     });
-    if (item === null) {
+    if (!item) {
         return null;
     }
     // grab the splitAmong relation from the item
     const splitAmongRelation = item.relation("splitAmong");
+    if (!splitAmongRelation) {
+        return null;
+    }
     // grab the user from the database
     const User = Parse.Object.extend("_User");
     const query2 = new Parse.Query(User);
@@ -245,7 +249,7 @@ export const deleteItemById = async (itemId) => {
             return null;
         }
     });
-    if (item === null) {
+    if (!item) {
         return -1;
     }
     try{
@@ -262,7 +266,7 @@ export const deleteItemById = async (itemId) => {
 // WRITE operation - create a new item with the provided data
 // Returns: object on success, null on failure
 export const createItemWithAttributes = async (
-    name, price, itemPhotoData, purchaserId, desirerId, listId
+    name, price, quantity, itemPhotoData, purchaserId, desirerId, listId
     ) => {
     // if listId doesn't exist, we can exit early
     if (!listId) {
@@ -274,13 +278,14 @@ export const createItemWithAttributes = async (
     const item = new Parse.Object("Item");
     item.set("list", listPointer);
     item.set("name", name);
+    item.set("quantity", quantity ? quantity : 1);
     price ? item.set("price", price) : noOp();
     if (itemPhotoData) {
         let parseFile = new Parse.File(itemPhotoData.name, itemPhotoData);
         item.set("photo", parseFile);
     }
     if (purchaserId) {
-        // retrieve the _User object and point to it in the 'desired' field
+        // retrieve the _User object and point to it in the 'purchased' field
         const user = await getUserById(purchaserId);
         user ? item.set("purchased", user) : noOp();
     }
@@ -300,5 +305,71 @@ export const createItemWithAttributes = async (
         console.log('Failed to create new Item object, with error code: ' + error.message);
         return null;
     }
+}
+
+// WRITE operation - update attributes of an existing item
+// Returns: the object on success, null on failure
+export const updateItemAttributes = async (
+    itemId, name, price, quantity, itemPhotoData, purchaserId, desirerId, userId
+) => {
+    const noOp = () => {};
+    const Item = Parse.Object.extend("Item");
+    const query = new Parse.Query(Item);
+    query.equalTo("objectId", itemId);
+    const item = await query.first({
+        success: function(item) {
+            return item;
+        },
+        error: function(error) {
+            console.log("Error fetching item: ", error);
+            return null;
+        }
+    });
+    if (!item) {
+        return null;
+    }
+    // store changes to send to parse
+    item.set("name", name);
+    item.set("price", price);
+    item.set("quantity", quantity);
+    if (itemPhotoData) {
+        let parseFile = new Parse.File(itemPhotoData.name, itemPhotoData);
+        item.set("photo", parseFile);
+    }
+    if (purchaserId) {
+        // retrieve the _User object and point to it in the 'purchased' field
+        const user = await getUserById(purchaserId);
+        user ? item.set("purchased", user) : noOp();
+    } else {
+        // set the "purchased" field to undefined
+        item.unset("purchased");
+    }
+    if (desirerId) {
+        // retrieve the _User object and add it to the splitAmong relation
+        // for the item object
+        let splitAmongRelation = item.relation("splitAmong");
+        const user = await getUserById(desirerId);
+        // add desirer to the relation if we can find them
+        user ? splitAmongRelation.add(user) : noOp();
+    } else {
+        // remove the user from the splitAmong relation
+        let splitAmongRelation = item.relation("splitAmong");
+        const user = await getUserById(userId);
+        // remove user from the relation if we can find them
+        user ? splitAmongRelation.remove(user) : noOp();
+    }
     
+    try{
+        // update the item
+        const result = await item.save();
+        if (result) {
+            console.log("Success updating object");
+            return result;
+        } else {
+            return null;
+        }
+    } catch(error) {
+        console.log('Failed to update object, with error code: ' + error.message);
+        return null;
+    }
 }

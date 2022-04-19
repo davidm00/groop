@@ -49,7 +49,8 @@ import {
   setItemAsDesiredByUser,
   setItemAsNotDesiredByUser,
   deleteItemById,
-  createItemWithAttributes
+  createItemWithAttributes,
+  updateItemAttributes
 } from "../../Services/itemService";
 import { makeStyles, useTheme } from "@mui/styles";
 import ClickableAvatarList from "../../Common/ClickableAvatarList/ClickableAvatarList";
@@ -133,6 +134,7 @@ async function transformData(item) {
     id: item.id,
     name: item.attributes.name,
     price: item.attributes.price,
+    quantity: item.attributes.quantity ? item.attributes.quantity : 1,
     purchased: item.attributes.purchased ? true : false,
     splitAmong: splitAmong,
     itemPhotoUrl: item.attributes.photo ? item.attributes.photo._url : null,
@@ -188,6 +190,12 @@ const headCells = [
     numeric: true,
     disablePadding: false,
     label: "Price",
+  },
+  {
+    id: "quantity",
+    numeric: true,
+    disablePadding: false,
+    label: "Quantity"
   },
   {
     id: "purchased",
@@ -335,11 +343,6 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Toggle Desired">
-            <IconButton onClick={onToggleDesired}>
-              <PersonAddIcon />
-            </IconButton>
-          </Tooltip>
           {selected.filter(
             (itemId, i) => (rows[itemId] && rows[itemId].purchaserId !== localUser.id)
           ).length !== 0 && (
@@ -349,6 +352,11 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title="Toggle Desired">
+            <IconButton onClick={onToggleDesired}>
+              <PersonAddIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       )}
       {selected.length === 1 && (
@@ -377,11 +385,6 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Toggle Desired">
-            <IconButton onClick={onToggleDesired}>
-              <PersonAddIcon />
-            </IconButton>
-          </Tooltip>
           {rows[selected[0]] && rows[selected[0]].purchaserId !== localUser.id && (
             <Tooltip title="Mark as Purchased">
               <IconButton onClick={onMarkAsPurchased}>
@@ -389,6 +392,11 @@ const EnhancedTableToolbar = (props) => {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title="Toggle Desired">
+            <IconButton onClick={onToggleDesired}>
+              <PersonAddIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       )}
       {selected.length === 0 && (
@@ -423,12 +431,12 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function ItemTable({ listId }) {
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("calories");
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [dense, setDense] = useState(true);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rows, setRows] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [refresh, setRefresh] = useState(false);
@@ -729,11 +737,12 @@ export default function ItemTable({ listId }) {
     console.log("Handling create item modal submit with attrs: ", attrs);
     const itemName = attrs.name;
     const price = Number.parseFloat(attrs.price);
+    const quantity = attrs.quantity ? Number.parseInt(attrs.quantity) : 1;
     const itemPhotoData = attrs.itemPhoto.currentFile;
     const purchaserId = attrs.markAsPurchased ? localUser.id : null;
     const desirerId = attrs.markAsDesired ? localUser.id : null;
     const itemObject = await createItemWithAttributes(
-      itemName, price, itemPhotoData, purchaserId, desirerId, listId
+      itemName, price, quantity, itemPhotoData, purchaserId, desirerId, listId
     );
     if (itemObject !== null) {
       // success: update local rows state variable (avoid costly refresh call)
@@ -751,9 +760,28 @@ export default function ItemTable({ listId }) {
   const [editItemModalOpen, setEditItemModalOpen] = useState(false);
   const handleEditItemModalOpen = () => setEditItemModalOpen(true);
   const handleEditItemModalClose = () => setEditItemModalOpen(false);
-  const onEditItemFormSubmit = (newAttrs) => {
-    // TODO: call refresh in here or edit rows on success
-    console.log("Handling edit item modal submit with newAttrs: ", newAttrs);
+  const onEditItemFormSubmit = async (attrs) => {
+    console.log("Handling edit item modal submit with newAttrs: ", attrs);
+    const itemId = attrs.id;
+    const itemName = attrs.name;
+    const price = Number.parseFloat(attrs.price);
+    const quantity = attrs.quantity ? Number.parseInt(attrs.quantity) : 1;
+    const itemPhotoData = attrs.itemPhoto.currentFile;
+    const purchaserId = attrs.markAsPurchased ? localUser.id : null;
+    const desirerId = attrs.markAsDesired ? localUser.id : null;
+    const userId = localUser.id;
+    const itemObject = await updateItemAttributes(
+      itemId, itemName, price, quantity, itemPhotoData, purchaserId, desirerId, userId
+    );
+    if (itemObject !== null) {
+      // success: update local rows state variable (avoid costly refresh call)
+      console.log("updated itemObject: ", itemObject);
+      const rowData = await transformData(itemObject);
+      setRows({...rows, [itemObject.id] : rowData});
+    } else {
+      // error: alert user
+      setErrorMessage(`Failed to update item: ${attrs.name}`);
+    }
     setEditItemModalOpen(false);
   }
 
@@ -923,6 +951,9 @@ export default function ItemTable({ listId }) {
                         </TableCell>
                         <TableCell align="right">
                           {row.price ? row.price.toFixed(2) : "-"}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.quantity ? row.quantity : "1"}
                         </TableCell>
                         <TableCell align="right">
                           {row.purchased ? (

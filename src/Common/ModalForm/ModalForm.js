@@ -13,7 +13,7 @@
 // call the onClose method instead.
 
 
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { 
     Typography,
     Button,
@@ -26,11 +26,12 @@ import {
     Checkbox
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import {UserContext} from "../../Context/userContext";
 
 const useStyles = makeStyles((theme) => ({
     itemImage: {
-      width: "250px",
-      height: "250px"
+      width: "4em",
+      height: "4em"
     },
     bottomButtons: {
         marginTop: "1em",
@@ -54,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         justifyContent: "flex-end",
         alignItems: "center",
+        height: "60%",
         "& > *": {
             marginLeft: "1em",
             marginRight: "1em"
@@ -67,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const priceRegex = /^[0-9]{0,7}\.?([0-9]{1,2})?$/;
+const quantityRegex = /^[1-9]?([0-9]{1,3})?$/;
 
 
 // types can be:
@@ -77,6 +80,7 @@ const priceRegex = /^[0-9]{0,7}\.?([0-9]{1,2})?$/;
 const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
 
     const classes = useStyles();
+    const { localUser } = useContext(UserContext);
 
     // If creating an item or list, set all properties to null to start.
     // If editing an item or list, get a snapshot of the it's current property values.
@@ -87,6 +91,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         formType === "CREATE_ITEM" ? {
             name: "",
             price: null,
+            quantity: "1",
             itemPhoto: {
                 currentFile: null,
                 previewImage: null,
@@ -97,14 +102,34 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             markAsDesired: true
         } : ( formType === "CREATE_LIST" ? {
             name: null
-        } : attributes)
+        } 
+        : ( formType === "EDIT_ITEM" ? {
+            id: attributes.id,
+            name: attributes.name,
+            price: attributes.price,
+            quantity: attributes.quantity,
+            initialImageSource: attributes.itemPhotoUrl ? attributes.itemPhotoUrl : null,
+            itemPhoto: {
+                currentFile: null,
+                previewImage: null,
+                message: "",
+                isError: false,
+            },
+            markAsPurchased: attributes.purchaserId ? true : false,
+            markAsDesired: (new Set(attributes.splitAmong.map(user => user.id))).has(localUser.id) ? true : false
+        } : {
+            name: attributes.name
+        }
+        ))
     );
 
     const [updated, setUpdated] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [nameInputWarning, setNameInputWarning] = useState(false);
     const [priceInputWarning, setPriceInputWarning] = useState(false);
+    const [quantityInputWarning, setQuantityInputWarning] = useState(false);
     const selectFile = (event) => {
+        setUpdated(true);
         setAttrs({...attrs, 
             itemPhoto: {
                     currentFile: event.target.files[0],
@@ -130,13 +155,20 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             // check if input follows our regex
             if (priceRegex.test(event.target.value)) {
                 setPriceInputWarning(false);
-                setAttrs({...attrs, [prop]: event.target.value});
-                return;
             } else {
-                // don't update price in attributes
                 setPriceInputWarning(true);
-                return;
             }
+            setAttrs({...attrs, [prop]: event.target.value});
+            return;
+        } else if (prop === "quantity") {
+            // check if input follows our regex
+            if (quantityRegex.test(event.target.value)) {
+                setQuantityInputWarning(false);
+            } else {
+                setQuantityInputWarning(true);
+            }
+            setAttrs({...attrs, [prop]: event.target.value});
+            return;
         } else if (prop === "markAsPurchased" || prop === "markAsDesired") {
             // grab different attribute from the event target for a checkbox input
             setAttrs({...attrs, [prop]: event.target.checked});
@@ -144,14 +176,11 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         } 
         // setting any other attributes
         setAttrs({...attrs, [prop]: event.target.value});
-        console.log("Attrs: ", attrs);
     }
-
-    console.log("attrs in ModalForm: ", attrs);
 
     return (
         <Box>
-        {formType === "CREATE_ITEM" && 
+        {(formType === "CREATE_ITEM" || formType === "EDIT_ITEM") && 
         (
         <Box>
             <form onSubmit={preventDefault} autoComplete="off">
@@ -193,6 +222,21 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         </FormControl>  
                     </Box> 
                     <Box className={classes.sameRow}>
+                        <Typography variant="h7">Quantity</Typography>
+                        <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
+                            <TextField
+                                type={"text"}
+                                value={attrs.quantity}
+                                onChange={onChangeHandler("quantity")}
+                                label="Quantity"
+                                helperText={quantityInputWarning ? 
+                                    "Invalid quantity" 
+                                    : null}
+                                error={quantityInputWarning ? true : false}
+                            />
+                        </FormControl>  
+                    </Box> 
+                    <Box className={classes.sameRow}>
                         <Typography variant="h7">Image</Typography>
                         <Box sx={{paddingRight: "0.5em"}}>
                         <label htmlFor="btn-choose">
@@ -212,21 +256,28 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         </label>
                         </Box>
                     </Box>
+                    {/* show the initial image from an existing item if one exists */}
+                    {attrs.initialImageSource && !attrs.itemPhoto.currentFile && (
                     <Box className={classes.sameRowRightAlign}>
-                        <Typography>
-                            {attrs.itemPhoto && attrs.itemPhoto.currentFile ? attrs.itemPhoto.currentFile.name : null}
-                        </Typography>
-                        {attrs.itemPhoto && attrs.itemPhoto.previewImage && (
-                            <Box>
-                                <Avatar alt={"item image preview"} src={attrs.itemPhoto.previewImage} />
-                            </Box>
-                        )}
+                            <img className={classes.itemImage} alt={"initial item preview"} src={attrs.initialImageSource} />
                     </Box>
+                    )}
+                    {attrs.itemPhoto && attrs.itemPhoto.currentFile && attrs.itemPhoto && attrs.itemPhoto.previewImage && (
+                    <Box className={classes.sameRowRightAlign}>
+                        {attrs.itemPhoto.currentFile.name && (
+                            <Typography>
+                            {attrs.itemPhoto.currentFile.name}
+                            </Typography>
+                        )}
+                        <img className={classes.itemImage} alt={"new item preview"} src={attrs.itemPhoto.previewImage} />
+                    </Box>
+                    )}
                     <Box className={classes.sameRow}>
                         <Typography variant="h7">Mark as Purchased</Typography>
-                        <FormControl sx={{ m: 1, maxWidth: "60%" }} autoComplete="off">
+                        <FormControl sx={{ m: 1, maxWidth: "60%" }} >
                             <Checkbox
                                 onChange={onChangeHandler("markAsPurchased")}
+                                checked={attrs.markAsPurchased}
                             />
                         </FormControl>  
                     </Box> 
@@ -235,20 +286,12 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} >
                             <Checkbox
                                 onChange={onChangeHandler("markAsDesired")}
-                                defaultChecked
+                                checked={attrs.markAsDesired}
                             />
                         </FormControl>  
                     </Box>      
                 </Stack>
             </form>
-        </Box>
-        )
-        }
-        {/* #################################### */}
-        {formType === "EDIT_ITEM" && 
-        (
-        <Box>
-            <Typography variant="h6">Edit Item</Typography>
         </Box>
         )
         }
@@ -269,7 +312,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         )
         }
         {/* #################################### */}
-        <hr style={{marginTop: "1em"}}/>
+        <hr/>
         <Box className={classes.bottomButtons}>
             <Button variant="submit"
                 onClick={() => {
@@ -281,8 +324,15 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                     if (updated) {
                         if (priceInputWarning) {
                             // do nothing if price is invalid
-                            noOp();
-                        } else {
+                            return;
+                        } else if (quantityInputWarning) {
+                            // do nothing if quantity is invalid
+                            return;
+                        } else if (attrs.quantity === ""){
+                            setQuantityInputWarning(true);
+                            return;
+                        }
+                        else {
                             // submit if valid updates have been made
                             setSubmitting(true);
                             onSubmit(attrs);
