@@ -1,9 +1,12 @@
-import React from 'react';
+import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/material";
-import { getGroupIdByListId, getListNameByListId } from "../../Services/itemService";
+import {
+  getGroupIdByListId,
+  getListNameByListId,
+} from "../../Services/itemService";
 import { getAllGroupMembers } from "../../Services/listService";
 import PageHeader from "../../Common/PageHeader/PageHeader";
 import ItemTable from "./ItemTable";
@@ -47,7 +50,12 @@ const Items = () => {
   }, [params]);
 
   return (
-    <Box>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="start"
+      sx={{ padding: "5rem", flexGrow: 1 }}
+    >
       <PageHeader
         pageTitle={listName}
         groupMembers={groupMembers}
