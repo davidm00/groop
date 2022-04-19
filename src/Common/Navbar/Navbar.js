@@ -61,8 +61,11 @@ const Navbar = () => {
   const { localUser, setLocalUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(false);
-
   const location = useLocation();
+
+  // useEffect(() => {
+  //   console.log('Location changed');
+  // }, [location]);
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -73,9 +76,6 @@ const Navbar = () => {
     setLocalUser(null);
   };
 
-  useEffect(() => {
-    console.log('Location changed');
-  }, [location]);
 
   return (
     <Box maxWidth={"100%"} sx={{ flexGrow: 1 }}>
