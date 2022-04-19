@@ -38,3 +38,13 @@ export const resetPassword = async (currentUser, newPassword) => {
       });
   return;
 };
+
+// READ operation - get a _User object from a userId
+// Returns: _User object on success, null on failure
+export const getUserById = async (userId) => {
+  const User = Parse.Object.extend("User");
+  const query = new Parse.Query(User);
+  query.equalTo("objectId", userId);
+  const user = await query.find();
+  return user ? user[0] : null;
+}

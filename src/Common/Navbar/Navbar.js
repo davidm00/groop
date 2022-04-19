@@ -18,12 +18,10 @@ import {
   Stack,
 } from "@mui/material";
 import {
-  ArrowBack,
   ManageAccounts as Account,
   Group,
   Settings,
   Drafts,
-  Home,
   ChevronLeft,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
@@ -150,7 +148,7 @@ const Navbar = () => {
               )} */}
               {localUser ? (
                 <Button
-                  color="inherit"
+                  variant="standard"
                   sx={{
                     display:
                       (location.pathname === "/account" ||
@@ -239,7 +237,7 @@ const Navbar = () => {
             "hidden",
         }}
         onClick={() => navigate(-1)}
-        color="inherit"
+        variant="standard"
       >
         <ArrowBack /> Back
       </Button> */}

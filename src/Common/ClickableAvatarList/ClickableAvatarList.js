@@ -42,20 +42,6 @@ const useStyles = makeStyles((theme) => ({
   modalTitle: {
     maxWidth: "80%"
   },
-  closeButtonContainer: {
-    display: "flex",
-    justifyContent: "flex-end",
-    marginTop: "-2em",
-  },
-  closeButton: {
-    backgroundColor: "darkGray",
-    color: "white",
-    borderRadius: "50%",
-    boxShadow: " 0 2px 4px 0 rgba(0, 0, 0, 0.2)",
-    "&:hover": {
-      backgroundColor: "gray",
-    },
-  },
 }));
 
 const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
@@ -139,7 +125,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                   })}
               </MuiList>
               <Box className={classes.centered}>
-                <Button variant="outlined" onClick={handleClose}>Close</Button>
+                <Button variant="standard" onClick={handleClose}>Close</Button>
               </Box>
             </Box>
           </Fade>
@@ -150,7 +136,6 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
           <AvatarGroup max={3}>
             {users.length > 0 ? (
               users.map((user) => {
-                console.log("User Attributes: ", user.attributes);
                 return user.attributes.profilePhoto ? (
                   <Tooltip
                     title={

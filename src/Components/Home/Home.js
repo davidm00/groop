@@ -33,8 +33,8 @@ const Home = () => {
         </Typography>
         {!auth && (
           <div>
-            <Button onClick={() => navigate("/login")}>Login</Button>{" "}
-            <Button onClick={() => navigate("/register")}>Register</Button>
+            <Button variant="standard" onClick={() => navigate("/login")}>Login</Button>{" "}
+            <Button variant="standard" onClick={() => navigate("/register")}>Register</Button>
           </div>
         )}
         <Box
