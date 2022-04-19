@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   getAllLists,
   getAllGroupMembers,
@@ -10,6 +10,7 @@ import { makeStyles } from "@mui/styles";
 import { Typography, Box, CircularProgress } from "@mui/material";
 import ListCard from "./ListCard";
 import PageHeader from "../../Common/PageHeader/PageHeader";
+import Chat from "../Chat/Chat";
 
 const useStyles = makeStyles((theme) => ({
   listGrid: {
@@ -30,12 +31,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // List Component
-const List = () => {
+const List = (group) => {
   const [lists, setLists] = useState(null);
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupName, setGroupName] = useState(null);
   const classes = useStyles();
   const params = useParams();
+  const { state } = useLocation();
+  console.log("State: ", state);
 
   useEffect(() => {
     // Get all lists in a specific group
@@ -43,7 +46,7 @@ const List = () => {
       console.log(`${params.groupId} Lists: `, res);
       setLists(res);
     });
-  }, [params]);
+  }, [params, state]);
 
   useEffect(() => {
     getAllGroupMembers(params.groupId).then((res) => {
@@ -56,7 +59,7 @@ const List = () => {
     getGroupNameByGroupId(params.groupId).then((res) => {
       setGroupName(res);
     });
-  }, [params]);
+  }, [params, state]);
 
   return (
     <Box
@@ -101,6 +104,7 @@ const List = () => {
           />
         </Box>
       )}
+      <Chat data={state}/>
     </Box>
   );
 };
