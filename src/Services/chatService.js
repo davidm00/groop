@@ -43,7 +43,7 @@ export const getAllMessages = async (groupId) => {
     .find()
     .then((res) => {
       let messages = res.map((message) => {
-        return {...message.attributes, id: message.id};
+        return { ...message.attributes, id: message.id };
       });
       return messages.reverse();
     });
@@ -73,7 +73,7 @@ export const createMessage = async (groupId, userId, body) => {
 
   message.save().then(
     (message) => {
-      console.log("New message created: " + message.attributes.body);
+      // console.log("New message created: " + message.attributes.body);
     },
     (error) => {
       console.log(
@@ -100,7 +100,7 @@ export const loadMoreMessages = async (count, groupId) => {
     .then((res) => {
       if (res.length > 0) {
         let messages = res.map((message) => {
-          return {...message.attributes, id: message.id};
+          return { ...message.attributes, id: message.id };
         });
         return messages.reverse();
       } else if (res.length < 1) {
@@ -114,14 +114,11 @@ export const deleteMessage = async (messageId) => {
   const Message = Parse.Object.extend("Message");
   const query = new Parse.Query(Message);
   return await query.get(messageId).then((res) => {
-    // return Lesson object with objectId: id
-    console.log("THE ANSW: ", res);
-    res.destroy()
-    .then((res) => {
-      console.log("deleted successfully: ", res)
-    })
-    .catch((e) => {
-      console.log("Error: ", e);
-    });
+    res
+      .destroy()
+      .then((res) => {})
+      .catch((e) => {
+        console.log("Error: ", e);
+      });
   });
 };

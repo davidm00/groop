@@ -55,10 +55,12 @@ const Chat = ({ data }) => {
   const [subscription, setSubscription] = useState(null);
   const [loadMore, setLoadMore] = useState(true);
   const [messages, setMessages] = useState(null);
+  const [subEvent, setSubEvent] = useState(null);
+  const [created, setCreated] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   const [newMessage, setNewMessage] = useState("");
   const [popUp, setPopUp] = useState(false);
-  const [deleted, setDeleted] = useState(false);
   const location = useLocation();
   const { localUser } = useContext(UserContext);
   const classes = useStyles();
@@ -88,45 +90,41 @@ const Chat = ({ data }) => {
     }
   }, [open, data.id]);
 
-  const onCreate = useCallback((sub) => {
-    sub.on("create", (object) => {
-      console.log("DOM SIDE -- object created: ", object);
-      if (messages) {
-        let temp = messages;
-        let newMsg = { ...object.attributes, id: object.id };
-        temp = [...temp, newMsg];
-        setMessages(temp);
-      }
-    });
-  }, [messages]);
-
   useEffect(() => {
     if (subscription) {
       subscription.then((res) => {
-        // res.on("create", (object) => {
-        //   console.log("DOM SIDE -- object created: ", object);
-        //   if (messages) {
-        //     let temp = messages;
-        //     let newMsg = { ...object.attributes, id: object.id };
-        //     temp = [...temp, newMsg];
-        //     setMessages(temp);
-        //   }
-        // });
-        onCreate(res);
+        res.on("create", (object) => {
+          console.log("DOM SIDE -- object created: ", object);
+          setCreated(true);
+          setSubEvent(object);
+        });
 
         res.on("delete", (object) => {
           console.log("object deleted: ", object);
-          if (messages && deleted) {
-            setDeleted(false);
-            let temp = messages;
-            temp = temp.filter((msg) => msg.id !== object.id);
-            setMessages(temp);
-          }
+          setDeleted(true);
+          setSubEvent(object);
         });
-        return res;
       });
     }
-  }, [subscription, messages, deleted]);
+  }, [subscription]);
+
+  useEffect(() => {
+    if (created && messages && subEvent) {
+      let temp = messages;
+      let newMsg = { ...subEvent.attributes, id: subEvent.id };
+      temp = [...temp, newMsg];
+      setMessages(temp);
+      setCreated(false);
+      setSubEvent(null);
+    }
+    if (deleted && messages && subEvent) {
+      let temp = messages;
+      temp = temp.filter((msg) => msg.id !== subEvent.id);
+      setMessages(temp);
+      setDeleted(false);
+      setSubEvent(null);
+    }
+  }, [created, deleted, messages, subEvent]);
 
   const handleClickOpen = () => {
     setOpen(true);
