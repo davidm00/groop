@@ -22,9 +22,10 @@ import {
     FormControl,
     CircularProgress,
     TextField,
-    Avatar,
     Checkbox
 } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { makeStyles } from "@mui/styles";
 import {UserContext} from "../../Context/userContext";
 
@@ -65,6 +66,23 @@ const useStyles = makeStyles((theme) => ({
         transition: "0.3s all",
         zIndex: 5,
     },
+    deleteButton: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    expandArrow: {
+        backgroundColor: "white",
+        width: "2em",
+        height: "2em",
+        borderRadius: "50%",
+        "&:hover": {
+            boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+        },
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    }
 }));
 
 
@@ -118,7 +136,8 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             markAsPurchased: attributes.purchaserId ? true : false,
             markAsDesired: (new Set(attributes.splitAmong.map(user => user.id))).has(localUser.id) ? true : false
         } : {
-            name: attributes.name
+            name: attributes.name,
+            delete: false
         }
         ))
     );
@@ -128,6 +147,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
     const [nameInputWarning, setNameInputWarning] = useState(false);
     const [priceInputWarning, setPriceInputWarning] = useState(false);
     const [quantityInputWarning, setQuantityInputWarning] = useState(false);
+    const [showDeleteButton, setShowDeleteButton] = useState(false);
     const selectFile = (event) => {
         setUpdated(true);
         setAttrs({...attrs, 
@@ -179,7 +199,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
     }
 
     return (
-        <Box>
+        <Box sx={{marginTop: "1em"}}>
         {(formType === "CREATE_ITEM" || formType === "EDIT_ITEM") && 
         (
         <Box>
@@ -296,18 +316,59 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         )
         }
         {/* #################################### */}
-        {formType === "CREATE_LIST" && 
+        {(formType === "CREATE_LIST" || formType === "EDIT_LIST") && 
         (
         <Box>
-            <Typography variant="h6">Create a New List</Typography>
-        </Box>
-        )
-        }
-        {/* #################################### */}
-        {formType === "EDIT_LIST" && 
-        (
-        <Box>
-            <Typography variant="h6">Edit List</Typography>
+            <form onSubmit={preventDefault} autoComplete="off">
+                <Stack
+                    direction="column"
+                    justifyContent="left"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <Box className={classes.sameRow}>
+                        <Typography variant="h7">List Name</Typography>
+                        <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
+                            <TextField
+                                type={"text"}
+                                value={attrs.name}
+                                onChange={onChangeHandler("name")}
+                                label="List Name"
+                                helperText={nameInputWarning ? 
+                                    "List name is required" 
+                                    : null}
+                                error={nameInputWarning ? true : false}
+                                required
+                            />
+                        </FormControl> 
+                    </Box>
+                    {formType === "EDIT_LIST" && (
+                        <Box className={classes.sameRow}>
+                            <Typography variant="h7">Delete List</Typography>
+                            <Box 
+                                className={classes.expandArrow}
+                                onClick={() => setShowDeleteButton(!showDeleteButton)}
+                            >
+                                {!showDeleteButton &&  <ExpandMoreIcon/>}
+                                {showDeleteButton && <ExpandLessIcon/>}
+                            </Box>
+                        </Box>
+                    )}
+                    {(formType === "EDIT_LIST" && showDeleteButton) && (
+                        <Box className={classes.deleteButton}>
+                            <Button 
+                                variant="delete"
+                                onClick={() => {
+                                    onSubmit({...attrs, delete: true});
+                                }}>
+                                <Typography variant="h7">
+                                    Delete List
+                                </Typography>
+                            </Button>
+                        </Box>
+                    )}
+                </Stack>
+            </form>
         </Box>
         )
         }
@@ -328,7 +389,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         } else if (quantityInputWarning) {
                             // do nothing if quantity is invalid
                             return;
-                        } else if (attrs.quantity === ""){
+                        } else if (attrs.quantity && attrs.quantity === ""){
                             setQuantityInputWarning(true);
                             return;
                         }
