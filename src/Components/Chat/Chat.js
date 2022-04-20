@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
-import Parse from "parse/lib/browser/Parse";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import { useLocation } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
-import { Box } from "@mui/system";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -17,10 +16,22 @@ import {
   Stack,
   Avatar,
   Typography,
+  CircularProgress,
+  Fade,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
-import { ChatBubbleRounded } from "@mui/icons-material";
+import { ChatBubbleRounded, CloseRounded } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
-import { createClient, handleClient, unsub } from "../../Services/chatService";
+import {
+  closeClient,
+  createClient,
+  createMessage,
+  deleteMessage,
+  getAllMessages,
+  loadMoreMessages,
+} from "../../Services/chatService";
+import { getMonth, getTime } from "../../Constants/dates";
 
 const useStyles = makeStyles(() => ({
   chatButton: {
@@ -33,12 +44,21 @@ const useStyles = makeStyles(() => ({
     top: "90vh",
     right: "2.5vw",
   },
+  loader: {
+    transition: "0.3s all",
+    zIndex: 5,
+  },
 }));
 
 const Chat = ({ data }) => {
   const [open, setOpen] = useState(false);
   const [subscription, setSubscription] = useState(null);
-  const [socket, setSocket] = useState(false);
+  const [loadMore, setLoadMore] = useState(true);
+  const [messages, setMessages] = useState(null);
+
+  const [newMessage, setNewMessage] = useState("");
+  const [popUp, setPopUp] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const location = useLocation();
   const { localUser } = useContext(UserContext);
   const classes = useStyles();
@@ -49,53 +69,110 @@ const Chat = ({ data }) => {
 
   const create = async () => {
     return await createClient().then((res) => {
-      console.log("UEF ** Connection Successful: ", res);
-      console.log("UEF ** : ", typeof res);
       return res;
     });
   };
 
   useEffect(() => {
     if (open) {
-      let tempSocket = create();
-      if (tempSocket !== "error" || tempSocket !== null) {
-        setSubscription(tempSocket);
-        console.log("Connected");
+      let tempSub = create();
+      if (tempSub !== "error" || tempSub !== null) {
+        setSubscription(tempSub);
       }
+      getAllMessages(data.id).then((res) => {
+        setMessages(res);
+      });
     } else {
-      handleClient("close");
+      closeClient();
+      setMessages(null);
     }
-  }, [open]);
+  }, [open, data.id]);
+
+  const onCreate = useCallback((sub) => {
+    sub.on("create", (object) => {
+      console.log("DOM SIDE -- object created: ", object);
+      if (messages) {
+        let temp = messages;
+        let newMsg = { ...object.attributes, id: object.id };
+        temp = [...temp, newMsg];
+        setMessages(temp);
+      }
+    });
+  }, [messages]);
 
   useEffect(() => {
-    console.log("subscription changed");
-    console.log("Subscription: ", subscription);
-
     if (subscription) {
       subscription.then((res) => {
-        console.log("PROMISE RESOLUTION: ", res);
-        res.on("open", () => {
-          console.log("DOM SIDE -- sub.open: CONNECTED");
-        });
+        // res.on("create", (object) => {
+        //   console.log("DOM SIDE -- object created: ", object);
+        //   if (messages) {
+        //     let temp = messages;
+        //     let newMsg = { ...object.attributes, id: object.id };
+        //     temp = [...temp, newMsg];
+        //     setMessages(temp);
+        //   }
+        // });
+        onCreate(res);
 
-        res.on("create", (object) => {
-          console.log("DOM SIDE -- object created: ", object);
+        res.on("delete", (object) => {
+          console.log("object deleted: ", object);
+          if (messages && deleted) {
+            setDeleted(false);
+            let temp = messages;
+            temp = temp.filter((msg) => msg.id !== object.id);
+            setMessages(temp);
+          }
         });
-
-        res.on("update", (object) => {
-          console.log("DOM SIDE -- object updated: ", object);
-        });
+        return res;
       });
     }
-  }, [subscription]);
+  }, [subscription, messages, deleted]);
 
-  const handleClickOpen = async () => {
+  const handleClickOpen = () => {
     setOpen(true);
-    // handleClient("open");
   };
   const handleClose = () => {
     setOpen(false);
-    // handleClient("close");
+    setNewMessage("");
+    setMessages(null);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    createMessage(data.id, localUser.id, newMessage).then(setNewMessage(""));
+  };
+
+  const onMessageChange = (event) => {
+    setNewMessage(event.target.value);
+  };
+
+  const handleScroll = (e) => {
+    if (e.currentTarget.scrollTop > 0 && messages.length > 0) {
+      setLoadMore(false);
+    } else {
+      setLoadMore(true);
+    }
+  };
+
+  const handleLoad = () => {
+    loadMoreMessages(messages.length, data.id).then((newMsgs) => {
+      if (newMsgs.length < 1) {
+        setPopUp(true);
+        setTimeout(() => {
+          setPopUp(false);
+        }, 4000);
+        return;
+      }
+      let temp = messages;
+      temp = [...newMsgs, ...temp];
+      setMessages(temp);
+    });
+  };
+
+  const handleDeleteMessage = (id) => {
+    deleteMessage(id).then(() => {
+      setDeleted(true);
+    });
   };
 
   return (
@@ -135,6 +212,8 @@ const Chat = ({ data }) => {
           >
             <DialogContentText></DialogContentText>
             <Box
+              id="chatScroll"
+              onScroll={handleScroll}
               sx={{
                 height: "100%",
                 width: "100%",
@@ -142,49 +221,173 @@ const Chat = ({ data }) => {
                 borderRadius: 1,
                 margin: "5px 0",
                 padding: 1,
+                overflow: "scroll",
               }}
             >
               <Box
                 sx={{
                   height: "fit-content",
                   width: "100%",
-                  outline: "black solid 1px",
-                  borderRadius: 1,
-                  margin: "5px 0",
-                  padding: 1,
                 }}
               >
-                <Stack
-                  direction={"row"}
-                  justifyContent={"start"}
-                  alignItems={"start"}
-                  sx={{
-                    height: "100%",
-                  }}
-                  spacing={1}
-                >
-                  <Avatar sx={{ width: 30, height: 30 }}>DM</Avatar>
-                  <Box
-                    sx={{
-                      height: "100%",
-                      width: "100%",
-                      overflowWrap: "break-word",
-                    }}
+                <Fade in={popUp} sx={{ width: "100%" }} unmountOnExit>
+                  <Alert
+                    severity="warning"
+                    sx={{ width: "100%", mt: 1, mb: 1.5 }}
                   >
-                    <Typography
-                      component={"span"}
-                      sx={{ overflowWrap: "break-word", height: "100%" }}
-                    >
-                      This is a message This is a message This is a message This
-                      is a message This is a message This is a message This is a
-                      message This is a message This is a message This is a
-                      message
-                    </Typography>
-                  </Box>
-                </Stack>
+                    <AlertTitle>Warning</AlertTitle>
+                    <strong>No more messages to load!</strong>
+                  </Alert>
+                </Fade>
+
+                <Fade in={loadMore} sx={{ width: "100%", mt: 1.5, mb: 1.5 }}>
+                  <Stack alignItems="center" sx={{ width: "100%" }}>
+                    <Button onClick={() => handleLoad()}>
+                      Load More Messages
+                    </Button>
+                  </Stack>
+                </Fade>
+                <Box sx={{ height: "100%" }}></Box>
+                {messages &&
+                  messages.length > 0 &&
+                  messages.map((message) => {
+                    return (
+                      <Stack
+                        key={message.id}
+                        direction={"row"}
+                        justifyContent={"start"}
+                        alignItems={"start"}
+                        sx={{
+                          height: "100%",
+                          outline: "black solid 1px",
+                          borderRadius: 1,
+                          margin: "5px 0",
+                          padding: 1,
+                        }}
+                        spacing={1}
+                      >
+                        {message.user.id !== localUser.id &&
+                          (message.user.attributes.profilePhoto ? (
+                            <Avatar
+                              alt={message.user.attributes.username}
+                              src={message.user.attributes.profilePhoto._url}
+                            />
+                          ) : (
+                            <Avatar
+                              sx={{
+                                width: 25,
+                                height: 25,
+                                bgcolor: "secondary.main",
+                                padding: 2.5,
+                                color: "white",
+                              }}
+                            >
+                              {message.user.attributes.firstName[0]}
+                              {message.user.attributes.lastName[0]}
+                            </Avatar>
+                          ))}
+                        <Box
+                          sx={{
+                            height: "100%",
+                            width: "100%",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          <Stack
+                            direction={"column"}
+                            justifyContent={"start"}
+                            alignItems={"start"}
+                          >
+                            <Typography
+                              component={"span"}
+                              variant={"body2"}
+                              sx={{
+                                overflowWrap: "break-word",
+                                height: "100%",
+                              }}
+                              gutterBottom
+                            >
+                              {message.body}
+                            </Typography>
+                            <Typography
+                              component={"span"}
+                              variant={"caption"}
+                              // sx={{ overflowWrap: "break-word", height: "100%" }}
+                            >
+                              {`${message.createdAt.getDate()} ${getMonth(
+                                message.createdAt.getMonth() + 1
+                              )} ${message.createdAt.getFullYear()} at ${getTime(
+                                message.createdAt
+                              )}`}
+                            </Typography>
+                          </Stack>
+                        </Box>
+                        {message.user.id === localUser.id &&
+                          (message.user.attributes.profilePhoto ? (
+                            <Avatar
+                              alt={message.user.attributes.username}
+                              src={message.user.attributes.profilePhoto._url}
+                            />
+                          ) : (
+                            <Avatar
+                              sx={{
+                                width: 25,
+                                height: 25,
+                                bgcolor: "secondary.main",
+                                padding: 2.5,
+                                color: "white",
+                              }}
+                            >
+                              {message.user.attributes.firstName[0]}
+                              {message.user.attributes.lastName[0]}
+                            </Avatar>
+                          ))}
+                        {message.user.id === localUser.id && (
+                          <IconButton
+                            onClick={() => {
+                              console.log("MESSAGE: ", message);
+                              handleDeleteMessage(message.id);
+                            }}
+                            size="small"
+                            sx={{
+                              position: "relative",
+                              top: -5,
+                              right: -5,
+                              m: 0,
+                              p: 0,
+                            }}
+                          >
+                            <CloseRounded fontSize="10" />
+                          </IconButton>
+                        )}
+                      </Stack>
+                    );
+                  })}
+                <Fade
+                  in={messages && messages.length < 1}
+                  sx={{ width: "100%" }}
+                  unmountOnExit
+                >
+                  <Typography variant="body1">No messages</Typography>
+                </Fade>
+                <Fade
+                  in={messages && messages.length < 1}
+                  sx={{ width: "100%" }}
+                  unmountOnExit
+                >
+                  <Stack justifyContent={"center"} alignItems={"center"}>
+                    <CircularProgress
+                      color="secondary"
+                      size={100}
+                      className={classes.loader}
+                    />
+                  </Stack>
+                </Fade>
               </Box>
             </Box>
             <TextField
+              onChange={onMessageChange}
+              value={newMessage}
               autoFocus
               id="name"
               label="New Message"
@@ -200,8 +403,7 @@ const Chat = ({ data }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
+          <Button onClick={handleSendMessage}>Send</Button>
         </DialogActions>
       </Dialog>
     </Box>

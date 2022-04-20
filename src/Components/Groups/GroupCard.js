@@ -29,7 +29,7 @@ const GroupCard = ({ group }) => {
       className={classes.groupCard}
       sx={{ flexGrow: 1 }}
       onClick={() => {
-        navigate(`/list/${group.id}`, {state: group.attributes});
+        navigate(`/list/${group.id}`, {state: {...group.attributes, id: group.id}});
       }}
     >
       <CardContent>

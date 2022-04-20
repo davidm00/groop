@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Parse from "parse/lib/browser/Parse";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -18,12 +18,10 @@ import {
   Stack,
 } from "@mui/material";
 import {
-  ArrowBack,
   ManageAccounts as Account,
   Group,
   Settings,
   Drafts,
-  Home,
   ChevronLeft,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
