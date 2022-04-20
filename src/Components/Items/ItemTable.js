@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import PropTypes from "prop-types";
-// import { makeStyles} from "@mui/styles";
 import { alpha } from "@mui/material/styles";
 import {
   Box,
@@ -11,15 +10,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   Toolbar,
   Typography,
   Paper,
   Checkbox,
   IconButton,
   Tooltip,
-  FormControlLabel,
-  Switch,
   Avatar,
   Alert,
   AlertTitle,
@@ -29,16 +25,13 @@ import {
   Fade
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoIcon from "@mui/icons-material/Photo";
 import CrisisAlertIcon from "@mui/icons-material/CrisisAlert";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { visuallyHidden } from "@mui/utils";
 import {
   getAllItemsInList,
   getUserNameByUserId,
@@ -148,36 +141,6 @@ async function transformData(item) {
   return rowData;
 }
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
 const headCells = [
   {
     id: "selectAll",
@@ -220,15 +183,9 @@ const headCells = [
 function EnhancedTableHead(props) {
   const {
     onSelectAllClick,
-    order,
-    orderBy,
     numSelected,
     rowCount,
-    onRequestSort,
   } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
 
   return (
     <TableHead>
@@ -249,20 +206,8 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
           </TableCell>
         ))}
       </TableRow>
@@ -273,10 +218,7 @@ function EnhancedTableHead(props) {
 EnhancedTableHead.propTypes = {
   selected: PropTypes.array.isRequired,
   numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
-  orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
 
@@ -431,11 +373,8 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function ItemTable({ listId }) {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("calories");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
-  const [dense, setDense] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rows, setRows] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
@@ -477,12 +416,6 @@ export default function ItemTable({ listId }) {
   useEffect(() => {
     populateRows();
   }, [populateRows, refresh]);
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
 
   const handleSelectAllClick = (event) => {
     console.log("event for selectAll: ", event);
@@ -532,10 +465,6 @@ export default function ItemTable({ listId }) {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
   };
 
   const onRefresh = () => {
@@ -682,7 +611,6 @@ export default function ItemTable({ listId }) {
     setRows({...theRows});
   }
 
-  // TODO: UPDATE THIS
   const deleteRow = async (itemId) => {
     console.log("Selected before delete: ", selected);
     // save the row in case deletion fails
@@ -838,8 +766,6 @@ export default function ItemTable({ listId }) {
                 <Typography variant="h6">Create a New Item</Typography>
               </Box> 
               <Box className={classes.modalContent}>
-                 
-                {/* {TODO: Form for editing items} */}
                 <ModalForm 
                   formType={"CREATE_ITEM"}
                   onSubmit={onCreateItemFormSubmit}
@@ -869,8 +795,6 @@ export default function ItemTable({ listId }) {
                 <Typography variant="h6">Edit Item: {rows[selected[0]] ? rows[selected[0]].name : ""}</Typography>
               </Box>
               <Box className={classes.modalContent}>
-                
-                {/* {TODO: Form for editing items} */}
                 <ModalForm 
                   formType={"EDIT_ITEM"} 
                   onSubmit={onEditItemFormSubmit}
@@ -899,23 +823,17 @@ export default function ItemTable({ listId }) {
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
+            size={"small"}
           >
             <EnhancedTableHead
               deleteRow={deleteRow}
               selected={selected}
               numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
               rowCount={Object.keys(rows).length}
             />
             <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.slice().sort(getComparator(order, orderBy)) */}
               {
-                //stableSort(rows, getComparator(order, orderBy))
                 Object.values(rows)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
@@ -1032,7 +950,7 @@ export default function ItemTable({ listId }) {
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height: 33 * emptyRows
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -1051,10 +969,6 @@ export default function ItemTable({ listId }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Condense Table"
-      />
       {errorMessage && (
         <Alert
           severity="error"
