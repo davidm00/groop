@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import Parse from "parse/lib/browser/Parse";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Stack,
@@ -7,7 +6,6 @@ import {
   Typography,
   Avatar,
   IconButton,
-  InputAdornment,
   InputLabel,
   FilledInput,
   FormControl,

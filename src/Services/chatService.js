@@ -5,120 +5,120 @@ import * as Env from "../environment";
 
 let client = new Parse.LiveQueryClient({
   applicationId: Env.APPLICATION_ID,
-  serverURL: "wss://groop.b4a.io", //Env.SERVER_URL + "groop.b4a.io", // Example: 'wss://livequerytutorial.back4app.io'
+  serverURL: Env.WS_SERVER_URL, //"wss://groop.b4a.io", //Env.SERVER_URL + "groop.b4a.io", // Example: 'wss://livequerytutorial.back4app.io'
   javascriptKey: Env.JAVASCRIPT_KEY,
 });
 let subscription = "";
 
-export const handleClient = async (action) => {
-  switch (action) {
-    case "open":
-      console.log("OPEN CLIENT");
-      client.open();
-      let Message = Parse.Object.extend("Message");
-      let query = new Parse.Query(Message);
-      query.find().then((results) => {
-        console.log("getAllMessages result: ", results);
-      });
-      subscription = client.subscribe(query);
-      break;
-    case "close":
-      // console.log("CLOSE SUB");
-      await client.unsubscribe(subscription);
-      client.close();
-      break;
-    default:
-      break;
-  }
-  // CLIENT
-  client.on("open", () => {
-    console.log("connection opened");
-  });
-
-  client.on("close", () => {
-    console.log("connection closed");
-  });
-
-  if (subscription) {
-    // SUBSCRIPTION
-    subscription.on("open", () => {
-      console.log("sub.open: CONNECTED");
-    });
-
-    subscription.on("create", (object) => {
-      console.log("object created: ", object);
-    });
-
-    subscription.on("update", (object) => {
-      console.log("object updated: ", object);
-    });
-  }
-
-  if (action === "open") {
-    return subscription;
-  }
+// Close client
+export const closeClient = async () => {
+  await client.unsubscribe(subscription);
+  client.close();
 };
 
+// WEBSOCKET - Open and create client
 export const createClient = async () => {
-  console.log("CREATE CLIENT CALLED");
   client.open();
 
   let Message = Parse.Object.extend("Message");
   let query = new Parse.Query(Message);
-  query.find().then((results) => {
-    console.log("getAllMessages result: ", results);
-  });
+  query.find();
   subscription = await client.subscribe(query);
-  // if(subscription){
-  //   console.log("Connection Successful: ", subscription);
-  //   return subscription;
-  // }
-  // .then((res) => {
-  //   console.log("Connection Successful: ", res);
-  //   // return res;
-  // })
-  // .catch((e) => {
-  //   console.log("Connection Failed: ", e);
-  //   return "error";
-  // });
-
-  subscription.on("open", () => {
-    console.log("subscription opened");
-  });
-
-  subscription.on("create", (object) => {
-    console.log("object created: ", object);
-  });
-
-  subscription.on("update", (object) => {
-    console.log("object updated: ", object);
-  });
 
   return subscription;
-
-  // let client = new Parse.LiveQueryClient({
-  //   applicationId: Env.APPLICATION_ID,
-  //   serverURL: Env.SERVER_URL + "groop.b4a.io", // Example: 'wss://livequerytutorial.back4app.io'
-  //   javascriptKey: Env.JAVASCRIPT_KEY,
-  // });
-  // let query = new Parse.Query("Message");
-  // query.ascending("createdAt").limit(5);
-  // let subscription = client.subscribe(query);
-  // client.open();
-  // client.on("open", () => {
-  //   console.log("socket connection established");
-  // });
 };
 
 // READ operation - get all messages in Parse class Message for a specific group
-export const getAllMessages = async (client, id) => {
-  // const Group = Parse.Object.extend("Group");
-  // const query = new Parse.Query(Group);
-  // return await query.get(id).then((result) => {
-  //   console.log("groupById result: ", result);
-  //   return result;
-  // });
-  var query = new Parse.Query("Message");
-  query.ascending("createdAt").limit(5);
-  var subscription = client.subscribe(query);
+export const getAllMessages = async (groupId) => {
+  const Message = Parse.Object.extend("Message");
+  const query = new Parse.Query(Message);
+  query.equalTo("group", {
+    __type: "Pointer",
+    className: "Group",
+    objectId: groupId,
+  });
+  return query
+    .descending("createdAt")
+    .limit(7)
+    .find()
+    .then((res) => {
+      let messages = res.map((message) => {
+        return { ...message.attributes, id: message.id };
+      });
+      return messages.reverse();
+    });
+};
+
+// CREATE - create a new message for a specific group
+export const createMessage = async (groupId, userId, body) => {
+  const Message = Parse.Object.extend("Message");
+  const message = new Message();
+
+  message.set("body", body);
+  message.set("group", {
+    __type: "Pointer",
+    className: "Group",
+    objectId: groupId,
+  });
+  message.set("group", {
+    __type: "Pointer",
+    className: "Group",
+    objectId: groupId,
+  });
+  message.set("user", {
+    __type: "Pointer",
+    className: "_User",
+    objectId: userId,
+  });
+
+  message.save().then(
+    (message) => {
+      // console.log("New message created: " + message.attributes.body);
+    },
+    (error) => {
+      console.log(
+        "Failed to create new message, with error code: " + error.message
+      );
+    }
+  );
+};
+
+// UPDATE - load more messages for a specific group
+export const loadMoreMessages = async (count, groupId) => {
+  const Message = Parse.Object.extend("Message");
+  const query = new Parse.Query(Message);
+  query.equalTo("group", {
+    __type: "Pointer",
+    className: "Group",
+    objectId: groupId,
+  });
+  return await query
+    .descending("createdAt")
+    .skip(count)
+    .limit(7)
+    .find()
+    .then((res) => {
+      if (res.length > 0) {
+        let messages = res.map((message) => {
+          return { ...message.attributes, id: message.id };
+        });
+        return messages.reverse();
+      } else if (res.length < 1) {
+        return [];
+      }
+    });
+};
+
+// DELETE - delete a message
+export const deleteMessage = async (messageId) => {
+  const Message = Parse.Object.extend("Message");
+  const query = new Parse.Query(Message);
+  return await query.get(messageId).then((res) => {
+    res
+      .destroy()
+      .then((res) => {})
+      .catch((e) => {
+        console.log("Error: ", e);
+      });
+  });
 };
