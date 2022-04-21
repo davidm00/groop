@@ -47,8 +47,8 @@ const PageHeader = ({
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const handleLeave = () => {
-    leaveGroup(groupId).then((res) => {
+  const handleLeave = async () => {
+    await leaveGroup(groupId).then((res) => {
       // navigate(-1, {state: {leave: groupId}})
       // console.log("I\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n group: ", res);
       let id = {leave: res}

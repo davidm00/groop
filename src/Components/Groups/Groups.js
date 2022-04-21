@@ -132,7 +132,7 @@ const Groups = () => {
   };
 
   useEffect(() => {
-    console.log("STATE CHANGED: ", state)
+    console.log("STATE")
     if (!gRef.current && !state) {
       // fetch groups via Parse init
       getUsersGroups().then((res) => {

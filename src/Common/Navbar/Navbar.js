@@ -103,8 +103,11 @@ const Navbar = () => {
                       "none",
                   }}
                   onClick={() => {
-                    // navigate("/groups", { state:  "back" });
-                    navigate(-1, { state: "back", replace:true  });
+                    if(location.pathname.includes("/item")){
+                      navigate(-1);
+                    }
+                    navigate("/groups", { state:  "back" });
+                    // navigate(-1, { state: "back", replace:true  });
                   }}
                 >
                   <ChevronLeft />
