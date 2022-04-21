@@ -1,7 +1,15 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Typography, Box, CircularProgress, Stack } from "@mui/material";
+import {
+  Typography,
+  Box,
+  CircularProgress,
+  Stack,
+  Button,
+} from "@mui/material";
 import ClickableAvatarList from "../ClickableAvatarList/ClickableAvatarList";
+import { leaveGroup } from "../../Services/groupService";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   loader: {
@@ -34,8 +42,19 @@ const PageHeader = ({
   pageSubtitle,
   groupMembers,
   showGroupMembers,
+  groupId,
 }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
+
+  const handleLeave = () => {
+    leaveGroup(groupId).then((res) => {
+      // navigate(-1, {state: {leave: groupId}})
+      // console.log("I\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n group: ", res);
+      let id = {leave: res}
+      navigate("/groups", { state: id });
+    });
+  };
 
   return (
     <Box>
@@ -69,13 +88,25 @@ const PageHeader = ({
           />
         )}
         {showGroupMembers && (
-          <Box className={classes.avatarsContainer}>
-            <ClickableAvatarList
-              users={groupMembers}
-              modalTitle={"Group Members"}
-              stringIfNoUsers={"No Group Members"}
-            />
-          </Box>
+          <Stack
+            direction="column"
+            spacing={1}
+            justifyContent={"end"}
+            alignItems={"center"}
+          >
+            <Box className={classes.avatarsContainer}>
+              <ClickableAvatarList
+                users={groupMembers}
+                modalTitle={"Group Members"}
+                stringIfNoUsers={"No Group Members"}
+              />
+            </Box>
+            {groupId && (
+              <Button variant="standard" onClick={handleLeave}>
+                Leave Group
+              </Button>
+            )}
+          </Stack>
         )}
       </div>
     </Box>

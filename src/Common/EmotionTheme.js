@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { primaryTheme } from "../Themes/primaryTheme";
 
 export default function EmotionTheme({ children }) {
-    console.log("Theme: ", primaryTheme);
+    // console.log("Theme: ", primaryTheme);
     return (
       <MuiThemeProvider theme={primaryTheme}>
         <ThemeProvider theme={primaryTheme}>

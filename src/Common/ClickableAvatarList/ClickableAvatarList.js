@@ -14,7 +14,7 @@ import {
   ListItemAvatar,
   ListItemText,
   List as MuiList,
-  Button
+  Button,
 } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,12 +36,12 @@ const useStyles = makeStyles((theme) => ({
     padding: "1em",
   },
   centered: {
-      display: "flex",
-      flexDirection: "row",
-        justifyContent: "center",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   modalTitle: {
-    maxWidth: "80%"
+    maxWidth: "80%",
   },
 }));
 
@@ -126,7 +126,9 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                   })}
               </MuiList>
               <Box className={classes.centered}>
-                <Button variant="standard" onClick={handleClose}>Close</Button>
+                <Button variant="standard" onClick={handleClose}>
+                  Close
+                </Button>
               </Box>
             </Box>
           </Fade>
@@ -136,30 +138,25 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
         {users ? (
           <AvatarGroup max={3}>
             {users.length > 0 ? (
-              users.map((user) => {
+              users.map((user, idx) => {
                 return user.attributes.profilePhoto ? (
                   <Tooltip
                     title={
-                      user.attributes.firstName +
-                      " " +
-                      user.attributes.lastName
+                      user.attributes.firstName + " " + user.attributes.lastName
                     }
-                    key={user.email}
+                    key={user.attributes.profilePhoto._url}
                     arrow
                   >
                     <Avatar
                       sx={{ width: "1.5em", height: "1.5em" }}
                       alt={user.attributes.username}
-                      key={user.email}
                       src={user.attributes.profilePhoto._url}
                     />
                   </Tooltip>
                 ) : (
                   <Tooltip
                     title={
-                      user.attributes.firstName +
-                      " " +
-                      user.attributes.lastName
+                      user.attributes.firstName + " " + user.attributes.lastName
                     }
                     key={user.email}
                     arrow
@@ -172,7 +169,6 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                         height: "1.5em",
                       }}
                       alt={user.attributes.username}
-                      key={user.email}
                     >
                       {user.attributes.firstName[0] +
                         user.attributes.lastName[0]}

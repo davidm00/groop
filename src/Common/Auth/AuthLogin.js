@@ -22,9 +22,9 @@ const AuthLogin = () => {
       logIn(user)
         .then((userLoggedIn) => {
           if (userLoggedIn) {
-            console.log(
-              `${userLoggedIn.get("firstName")}, you successfully logged in!`
-            );
+            // console.log(
+            //   `${userLoggedIn.get("firstName")}, you successfully logged in!`
+            // );
             // TODO: redirect user to main app
             setAdd(false);
             setLocalUser(userLoggedIn);

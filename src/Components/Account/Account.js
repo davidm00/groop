@@ -19,7 +19,7 @@ import parse from "parse";
 
 const Account = () => {
   const { localUser, setLocalUser } = useContext(UserContext);
-  console.log("LOCALUSER: ", localUser);
+  // console.log("LOCALUSER: ", localUser);
   const [image, setImage] = useState({
     currentFile: undefined,
     previewImage: undefined,
@@ -46,7 +46,7 @@ const Account = () => {
       previewImage: URL.createObjectURL(event.target.files[0]),
       message: "",
     });
-    console.log(event.target.files[0]);
+    // console.log(event.target.files[0]);
   };
 
   const upload = async () => {

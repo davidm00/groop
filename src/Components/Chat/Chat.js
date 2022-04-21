@@ -65,7 +65,7 @@ const Chat = ({ data }) => {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log("Location changed");
+    // console.log("Location changed");
   }, [location]);
 
   const create = async () => {
@@ -93,13 +93,13 @@ const Chat = ({ data }) => {
     if (subscription) {
       subscription.then((res) => {
         res.on("create", (object) => {
-          console.log("DOM SIDE -- object created: ", object);
+          // console.log("DOM SIDE -- object created: ", object);
           setCreated(true);
           setSubEvent(object);
         });
 
         res.on("delete", (object) => {
-          console.log("object deleted: ", object);
+          // console.log("object deleted: ", object);
           setDeleted(true);
           setSubEvent(object);
         });
@@ -342,7 +342,7 @@ const Chat = ({ data }) => {
                         {message.user.id === localUser.id && (
                           <IconButton
                             onClick={() => {
-                              console.log("MESSAGE: ", message);
+                              // console.log("MESSAGE: ", message);
                               handleDeleteMessage(message.id);
                             }}
                             size="small"

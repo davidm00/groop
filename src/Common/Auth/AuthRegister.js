@@ -24,9 +24,9 @@ const AuthRegister = () => {
       createUser(newUser)
         .then((userCreated) => {
           if (userCreated) {
-            console.log(
-              `${userCreated.get("firstName")}, you successfully registered!`
-            );
+            // console.log(
+            //   `${userCreated.get("firstName")}, you successfully registered!`
+            // );
             // TODO: redirect user to main app
             setAdd(false);
             setLocalUser(userCreated);

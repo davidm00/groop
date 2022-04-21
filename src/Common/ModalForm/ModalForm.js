@@ -157,7 +157,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                     message: "",
             }
         });
-        console.log(event.target.files[0]);
+        // console.log(event.target.files[0]);
     };
 
     const noOp = () => {};

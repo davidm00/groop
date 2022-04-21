@@ -191,6 +191,7 @@ const List = (group) => {
         pageSubtitle={params.groupId}
         groupMembers={groupMembers}
         showGroupMembers={true}
+        groupId={params.groupId}
       />
       {lists ? (
         <Box sx={{ flexGrow: 1 }} className={classes.listGrid}>

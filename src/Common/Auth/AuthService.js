@@ -10,7 +10,7 @@ export const createUser = (newUser) => {
   user.set("password", newUser.password);
   user.set("email", newUser.email);
 
-  console.log("User: ", user);
+  // console.log("User: ", user);
   return user
     .signUp()
     .then((newUserSaved) => {
@@ -31,11 +31,11 @@ export const logIn = (userInfo) => {
 
   if(userInfo.email)
 
-  console.log("User: ", user);
+  // console.log("User: ", user);
   return user
     .logIn()
     .then((userLoggedIn) => {
-      console.log("userLoggedIn: ", userLoggedIn)
+      // console.log("userLoggedIn: ", userLoggedIn)
       return userLoggedIn;
     })
     .catch((error) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import {
@@ -13,12 +13,12 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import PageHeader from "../../Common/PageHeader/PageHeader";
-
-import GroupCard from "./GroupCard";
-
-import { getUsersGroups } from "../../Services/groupService";
 import { Close } from "@mui/icons-material";
+import { useLocation } from "react-router-dom";
+
+import PageHeader from "../../Common/PageHeader/PageHeader";
+import GroupCard from "./GroupCard";
+import { getUsersGroups, joinGroup } from "../../Services/groupService";
 
 const useStyles = makeStyles(() => ({
   groupGrid: {
@@ -43,6 +43,13 @@ const Groups = () => {
   const classes = useStyles();
   const [groups, setGroups] = useState([]);
   const [open, setOpen] = React.useState(false);
+  const [joinID, setJoinID] = useState("");
+  const { state } = useLocation();
+  const gRef = useRef(null);
+
+  const handleChange = (event) => {
+    setJoinID(event.target.value);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -52,13 +59,37 @@ const Groups = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    // fetch groups via Parse
-    getUsersGroups().then((res) => {
-      console.log(`Groups: `, res);
-      setGroups(res);
+  const handleJoin = (e) => {
+    e.preventDefault();
+    joinGroup(joinID).then((res) => {
+      handleClose();
+      let temp = groups;
+      temp = [...temp, res];
+      setGroups(temp);
     });
-  }, []);
+  };
+
+  useEffect(() => {
+    if (!gRef.current && !state) {
+      // fetch groups via Parse init
+      getUsersGroups().then((res) => {
+        setGroups(res);
+        gRef.current = true;
+      });
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (state && state.leave) {
+      // fetch groups via Parse after leaving a group
+      getUsersGroups().then((res) => {
+        let temp = res;
+        temp = temp.filter((group) => group.id !== state.leave);
+        setGroups(temp);
+        state.leave = null;
+      });
+    }
+  }, [groups, state]);
 
   // render the groups
   return (
@@ -95,7 +126,7 @@ const Groups = () => {
               position: "absolute",
               right: 8,
               top: 8,
-              color: 'secondary.dark',
+              color: "secondary.dark",
             }}
           >
             <Close />
@@ -112,11 +143,12 @@ const Groups = () => {
             type="text"
             fullWidth
             variant="outlined"
-            sx={{mt: 2}}
+            sx={{ mt: 2 }}
+            onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
-          <Button variant={"submit"} onClick={handleClose}>
+          <Button variant={"submit"} onClick={(e) => handleJoin(e)}>
             Join
           </Button>
         </DialogActions>
