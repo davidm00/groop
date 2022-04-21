@@ -59,8 +59,8 @@ export const createGroup = async (groupName, userId) => {
     console.log("failed to retrieve user, so cannot create group");
     return -1;
   }
-  // grab the user's "group" relation
-  let groupRelation = user.relation("group");
+  // grab the user's "groups" relation
+  let groupsRelation = user.relation("groups");
   // now try to create the group
   const group = new Parse.Object("Group");
   group.set("name", groupName);
@@ -68,11 +68,11 @@ export const createGroup = async (groupName, userId) => {
     // save the Object
     let groupResult = await group.save()
     console.log('New Group object created with objectId: ' + groupResult.id);
-    // now add the new group to the "group" relation for the user
-    groupRelation.add(groupResult);
+    // now add the new group to the "groups" relation for the user
+    groupsRelation.add(groupResult);
     const userSaveResult = await user.save();
     if (!userSaveResult) {
-      // if we can't add this group to a user's "group" relation,
+      // if we can't add this group to a user's "groups" relation,
       // then delete it because it won't have an references to it
       await deleteGroup(groupResult.id);
       return null;

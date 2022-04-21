@@ -119,7 +119,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             markAsPurchased: false,
             markAsDesired: true
         } : ( formType === "CREATE_LIST_OR_GROUP" ? {
-            name: null
+            name: ""
         } 
         : ( formType === "EDIT_ITEM" ? {
             id: attributes.id,
@@ -331,7 +331,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
-                                value={attrs.name}
+                                value={attrs.name ? attrs.name : ""}
                                 onChange={onChangeHandler("name")}
                                 label="Name"
                                 helperText={nameInputWarning ? 
