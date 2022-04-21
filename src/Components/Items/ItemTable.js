@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import PropTypes from "prop-types";
-// import { makeStyles} from "@mui/styles";
+
 import { alpha } from "@mui/material/styles";
 import {
   Box,
@@ -28,16 +28,16 @@ import {
   Modal,
   Fade
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import EditIcon from "@mui/icons-material/Edit";
-import PhotoIcon from "@mui/icons-material/Photo";
-import CrisisAlertIcon from "@mui/icons-material/CrisisAlert";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import {
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  PersonAdd as PersonAddIcon,
+  ShoppingBag as ShoppingBagIcon,
+  Edit as EditIcon,
+  Photo as PhotoIcon,
+  Refresh as RefreshIcon,
+  CrisisAlert as CrisisAlertIcon
+} from "@mui/icons-material";
 import { visuallyHidden } from "@mui/utils";
 import {
   getAllItemsInList,
@@ -148,35 +148,35 @@ async function transformData(item) {
   return rowData;
 }
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+// function descendingComparator(a, b, orderBy) {
+//   if (b[orderBy] < a[orderBy]) {
+//     return -1;
+//   }
+//   if (b[orderBy] > a[orderBy]) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+// function getComparator(order, orderBy) {
+//   return order === "desc"
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort(array, comparator) {
+//   const stabilizedThis = array.map((el, index) => [el, index]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 const headCells = [
   {
