@@ -84,6 +84,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center"
+  },
+  listsPage: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "3em",
   }
 }));
 
@@ -150,10 +155,8 @@ const List = (group) => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="start"
-      sx={{ padding: "5rem", flexGrow: 1 }}
+      className={classes.listsPage}
+      sx={{ flexGrow: 1 }}
     >
       <Modal
         aria-labelledby="Modal for creating a list"

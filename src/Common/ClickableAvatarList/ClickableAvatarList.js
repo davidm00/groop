@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 350,
+    width: "350px",
+    maxHeight: "550px",
     backgroundColor: "white",
     color: theme.palette.text.primary,
     p: 4,
@@ -77,7 +78,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                 </Typography>
               </Box>
               <MuiList
-                sx={{ maxHeight: 250, overflow: "auto", paddingTop: "1em" }}
+                sx={{ maxHeight: 350, overflow: "auto", paddingTop: "1em" }}
               >
                 {users &&
                   users.map((user) => {
@@ -143,6 +144,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                       " " +
                       user.attributes.lastName
                     }
+                    key={user.email}
                     arrow
                   >
                     <Avatar
@@ -159,6 +161,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                       " " +
                       user.attributes.lastName
                     }
+                    key={user.email}
                     arrow
                   >
                     <Avatar

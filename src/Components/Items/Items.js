@@ -13,11 +13,17 @@ import ItemTable from "./ItemTable";
 import Chat from "../Chat/Chat";
 
 const useStyles = makeStyles(() => ({
-  margin: {
-    marginTop: "2em",
+  itemTableContainer: {
+    marginTop: "1em",
     marginLeft: "13%",
-    marginRight: "13%",
+    marginRight: "13%"
   },
+  itemPage: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    marginTop: "3em"
+  }
 }));
 
 const Items = () => {
@@ -54,18 +60,16 @@ const Items = () => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="start"
-      sx={{ padding: "5rem", flexGrow: 1 }}
+      className={classes.itemPage}
+      sx={{ flexGrow: 1 }}
     >
       <PageHeader
         pageTitle={listName}
         groupMembers={groupMembers}
         showGroupMembers={true}
       />
-      <Box className={classes.margin}>
-        <ItemTable listId={params.listId} />
+      <Box className={classes.itemTableContainer}>
+        <ItemTable listId={params.listId} groupMembers={groupMembers}/>
       </Box>
       <Chat data={state} />
     </Box>
