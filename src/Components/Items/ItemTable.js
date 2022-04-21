@@ -49,6 +49,7 @@ import { makeStyles, useTheme } from "@mui/styles";
 import ClickableAvatarList from "../../Common/ClickableAvatarList/ClickableAvatarList";
 import { UserContext } from "../../Context/userContext";
 import ModalForm from "../../Common/ModalForm/ModalForm.js";
+import PaymentSummaryModal from "./PaymentSummaryModal";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -84,6 +85,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center"
+  },
+  paymentSummaryButtonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: "2em"
   }
 }));
 
@@ -372,7 +379,7 @@ EnhancedTableToolbar.propTypes = {
   onToggleDesired: PropTypes.func.isRequired,
 };
 
-export default function ItemTable({ listId }) {
+export default function ItemTable({ listId, groupMembers }) {
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -713,11 +720,21 @@ export default function ItemTable({ listId }) {
     setEditItemModalOpen(false);
   }
 
+  // for payment summary modal
+  const [paymentSummaryModalOpen, setPaymentSummaryModalOpen] = useState(false);
+  const handlePaymentSummaryModalOpen = () => setPaymentSummaryModalOpen(true);
+  const handlePaymentSummaryModalClose = () => setPaymentSummaryModalOpen(false);
 
 
   return (
     <Box sx={{ width: "100%" }}>
       <div>
+        <PaymentSummaryModal
+          open={paymentSummaryModalOpen}
+          rows={rows}
+          onClose={handlePaymentSummaryModalClose}
+          groupMembers={groupMembers}
+        />
         <Modal
           aria-labelledby="Modal showing image of item"
           aria-describedby="Modal showing image of item"
@@ -969,6 +986,9 @@ export default function ItemTable({ listId }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <Box className={classes.paymentSummaryButtonContainer}>
+          <Button variant="action" onClick={handlePaymentSummaryModalOpen}>Payment Summary</Button>
+      </Box>
       {errorMessage && (
         <Alert
           severity="error"

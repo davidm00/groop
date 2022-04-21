@@ -66,7 +66,7 @@ const Items = () => {
         showGroupMembers={true}
       />
       <Box className={classes.itemTableContainer}>
-        <ItemTable listId={params.listId} />
+        <ItemTable listId={params.listId} groupMembers={groupMembers}/>
       </Box>
     </Box>
   );

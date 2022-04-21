@@ -92,6 +92,17 @@ export const primaryTheme = createTheme({
               boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
             }
           }
+        },
+        {
+          props: {variant: "action"},
+          style: {
+            backgroundColor: sMain,
+            color: "white",
+            "&:hover": {
+              backgroundColor: sLight,
+              boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.2)",
+            }
+          }
         }
       ],
     },
