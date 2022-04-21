@@ -188,6 +188,7 @@ const List = (group) => {
       </Modal>
       <PageHeader
         pageTitle={groupName}
+        pageSubtitle={params.groupId}
         groupMembers={groupMembers}
         showGroupMembers={true}
       />

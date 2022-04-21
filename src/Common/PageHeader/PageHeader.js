@@ -1,10 +1,6 @@
 import React from "react";
-import { makeStyles} from "@mui/styles";
-import {
-  Typography,
-  Box,
-  CircularProgress,
-} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Typography, Box, CircularProgress, Stack } from "@mui/material";
 import ClickableAvatarList from "../ClickableAvatarList/ClickableAvatarList";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,21 +29,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PageHeader = ({ pageTitle, groupMembers, showGroupMembers }) => {
+const PageHeader = ({
+  pageTitle,
+  pageSubtitle,
+  groupMembers,
+  showGroupMembers,
+}) => {
   const classes = useStyles();
 
   return (
     <Box>
       <div className={classes.pageHeader}>
         {pageTitle ? (
-          <Typography
-            variant="h1"
-            sx={{ fontSize: 28, width: "75%" }}
-            gutterBottom
-            align={"left"}
-          >
-            {pageTitle}
-          </Typography>
+          <Stack>
+            <Typography
+              variant="h1"
+              sx={{ fontSize: 28, width: "100%", mr: "10vw" }}
+              gutterBottom
+              align={"left"}
+            >
+              {pageTitle}
+            </Typography>
+            {pageSubtitle && (
+              <Typography
+                variant="h1"
+                sx={{ fontSize: 14, width: "100%" }}
+                gutterBottom
+                align={"left"}
+              >
+                Shareable Group ID: {pageSubtitle}
+              </Typography>
+            )}
+          </Stack>
         ) : (
           <CircularProgress
             color="secondary"
@@ -57,7 +70,11 @@ const PageHeader = ({ pageTitle, groupMembers, showGroupMembers }) => {
         )}
         {showGroupMembers && (
           <Box className={classes.avatarsContainer}>
-            <ClickableAvatarList users={groupMembers} modalTitle={"Group Members"} stringIfNoUsers={"No Group Members"} />
+            <ClickableAvatarList
+              users={groupMembers}
+              modalTitle={"Group Members"}
+              stringIfNoUsers={"No Group Members"}
+            />
           </Box>
         )}
       </div>
