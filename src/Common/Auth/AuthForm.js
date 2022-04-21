@@ -112,7 +112,7 @@ const AuthForm = ({ type, user, onChange, onSubmit }) => {
               label="Password"
             />
           </FormControl>
-          <Button type="submit" onSubmit={onSubmit}>
+          <Button variant="submit" type="submit" onSubmit={onSubmit}>
             Submit
           </Button>
           <Stack
