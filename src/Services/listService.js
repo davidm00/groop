@@ -130,8 +130,8 @@ export const deleteList = async (listId) => {
     }
   });
   if (!list) {
-    // couldn't retrieve list item
-    return null;
+    // couldn't retrieve list object
+    return -1;
   }
   try{
     // delete the list

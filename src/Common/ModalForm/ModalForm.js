@@ -93,8 +93,8 @@ const quantityRegex = /^[1-9]?([0-9]{1,3})?$/;
 // types can be:
 // - "CREATE_ITEM"
 // - "EDIT_ITEM"
-// - "CREATE_LIST"
-// - "EDIT_LIST"
+// - "CREATE_LIST_OR_GROUP"
+// - "EDIT_LIST_OR_GROUP"
 const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
 
     const classes = useStyles();
@@ -118,7 +118,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             },
             markAsPurchased: false,
             markAsDesired: true
-        } : ( formType === "CREATE_LIST" ? {
+        } : ( formType === "CREATE_LIST_OR_GROUP" ? {
             name: null
         } 
         : ( formType === "EDIT_ITEM" ? {
@@ -316,7 +316,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         )
         }
         {/* #################################### */}
-        {(formType === "CREATE_LIST" || formType === "EDIT_LIST") && 
+        {(formType === "CREATE_LIST_OR_GROUP" || formType === "EDIT_LIST_OR_GROUP") && 
         (
         <Box>
             <form onSubmit={preventDefault} autoComplete="off">
@@ -327,22 +327,22 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                     spacing={2}
                 >
                     <Box className={classes.sameRow}>
-                        <Typography variant="h7">List Name</Typography>
+                        <Typography variant="h7">Name</Typography>
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
                                 value={attrs.name}
                                 onChange={onChangeHandler("name")}
-                                label="List Name"
+                                label="Name"
                                 helperText={nameInputWarning ? 
-                                    "List name is required" 
+                                    "Name is required" 
                                     : null}
                                 error={nameInputWarning ? true : false}
                                 required
                             />
                         </FormControl> 
                     </Box>
-                    {formType === "EDIT_LIST" && (
+                    {formType === "EDIT_LIST_OR_GROUP" && (
                         <Box className={classes.sameRow}>
                             <Typography variant="h7">Delete List</Typography>
                             <Box 
@@ -354,7 +354,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                             </Box>
                         </Box>
                     )}
-                    {(formType === "EDIT_LIST" && showDeleteButton) && (
+                    {(formType === "EDIT_LIST_OR_GROUP" && showDeleteButton) && (
                         <Box className={classes.deleteButton}>
                             <Button 
                                 variant="delete"
