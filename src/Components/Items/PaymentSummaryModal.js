@@ -173,7 +173,6 @@ const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
                             />
                         </ListItem>
                         )}
-                        {/* TODO: payment summary info here */}
                         <Box className={classes.paymentInfoContainer}>
                             <Box className={classes.paymentInfoField}>
                                 <Typography>
