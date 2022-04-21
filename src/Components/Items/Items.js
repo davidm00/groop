@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/material";
 import {
@@ -10,6 +10,7 @@ import {
 import { getAllGroupMembers } from "../../Services/listService";
 import PageHeader from "../../Common/PageHeader/PageHeader";
 import ItemTable from "./ItemTable";
+import Chat from "../Chat/Chat";
 
 const useStyles = makeStyles(() => ({
   margin: {
@@ -23,6 +24,8 @@ const Items = () => {
   const [groupId, setGroupId] = useState(null);
   const [groupMembers, setGroupMembers] = useState(null);
   const [listName, setListName] = useState(null);
+  const { state } = useLocation();
+  console.log("ITEM STATE: ", state)
   const params = useParams();
   const classes = useStyles();
 
@@ -64,6 +67,7 @@ const Items = () => {
       <Box className={classes.margin}>
         <ItemTable listId={params.listId} />
       </Box>
+      <Chat data={state} />
     </Box>
   );
 };

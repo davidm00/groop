@@ -165,7 +165,7 @@ const ListCard = ({ list, setErrorMessageCallback, removeListFromParentStateCall
         className={classes.listCard}
         sx={{ flexGrow: 1 }}
         onClick={() => {
-          navigate(`/item/${list.id}`);
+          navigate(`/item/${list.id}`, {state: {...list.attributes.group.attributes, id: list.attributes.group.id}});
         }}
       >
         <Box className={classes.cardBody}>

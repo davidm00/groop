@@ -20,8 +20,6 @@ import {
 import {
   ManageAccounts as Account,
   Group,
-  Settings,
-  Drafts,
   ChevronLeft,
 } from "@mui/icons-material";
 import { makeStyles } from "@mui/styles";
@@ -47,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 0,
     transition: "boxShadow 1s",
     "&:hover": {
-      // backgroundColor: theme.palette.secondary.dark,
       boxShadow: " 0 8px 16px 0 rgba(0, 0, 0, 0.4)",
       cursor: "pointer",
     },
@@ -60,10 +57,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(false);
   const location = useLocation();
-
-  // useEffect(() => {
-  //   console.log('Location changed');
-  // }, [location]);
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -135,17 +128,6 @@ const Navbar = () => {
               >
                 Groop
               </Typography>
-              {/* {localUser && (
-                <Typography
-                  sx={{
-                    display:
-                      (location.pathname !== "/account" ||
-                        location.pathname !== "/login" ||
-                        location.pathname !== "/register") &&
-                      "block",
-                  }}
-                ></Typography>
-              )} */}
               {localUser ? (
                 <Button
                   variant="standard"
@@ -164,15 +146,7 @@ const Navbar = () => {
                   Log Out
                 </Button>
               ) : (
-                <Typography
-                // sx={{
-                //   display:
-                //     (location.pathname == "/account" ||
-                //       location.pathname !== "/login" ||
-                //       location.pathname !== "/register") &&
-                //     "block",
-                // }}
-                ></Typography>
+                <></>
               )}
             </Stack>
           </Toolbar>
@@ -193,7 +167,7 @@ const Navbar = () => {
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
             <List>
-              {["Account", "Groups", "Settings", "Drafts"].map((text) => (
+              {["Account", "Groups"].map((text) => (
                 <Link
                   to={`/${text.toLowerCase()}`}
                   key={text}
@@ -203,8 +177,7 @@ const Navbar = () => {
                     <ListItemIcon sx={{ color: "white" }}>
                       {text === "Account" && <Account />}
                       {text === "Groups" && <Group />}
-                      {text === "Settings" && <Settings />}
-                      {text === "Drafts" && <Drafts />}
+                      {/* {text === "Join" && <Settings />} */}
                     </ListItemIcon>
                     <ListItemText primary={text} />
                   </ListItem>

@@ -239,7 +239,7 @@ const Chat = ({ data }) => {
 
                 <Fade in={loadMore} sx={{ width: "100%", mt: 1.5, mb: 1.5 }}>
                   <Stack alignItems="center" sx={{ width: "100%" }}>
-                    <Button onClick={() => handleLoad()}>
+                    <Button variant="standard" onClick={() => handleLoad()}>
                       Load More Messages
                     </Button>
                   </Stack>
@@ -400,7 +400,7 @@ const Chat = ({ data }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSendMessage}>Send</Button>
+          <Button variant={"standard"} onClick={handleSendMessage}>Send</Button>
         </DialogActions>
       </Dialog>
     </Box>

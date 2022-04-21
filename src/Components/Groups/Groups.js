@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import PageHeader from "../../Common/PageHeader/PageHeader";
 
 import GroupCard from "./GroupCard";
@@ -41,11 +41,14 @@ const Groups = () => {
       alignItems="start"
       sx={{ padding: "5rem", flexGrow: 1 }}
     >
-      <PageHeader
-        pageTitle={"Your Groups"}
-        groupMembers={null}
-        showGroupMembers={false}
-      />
+      <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} spacing={2}>
+        <PageHeader
+          pageTitle={"Your Groups"}
+          groupMembers={null}
+          showGroupMembers={false}
+        />
+        <Button variant="standard">Join a Groop!</Button>
+      </Stack>
       <Box sx={{ flexGrow: 1 }} className={classes.groupGrid}>
         {groups.map((group) => {
           return <GroupCard key={group.id} group={group} />;
