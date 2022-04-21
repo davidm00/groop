@@ -73,6 +73,7 @@ const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
         console.log("theUserData before filling it: ", theUserData);
         // parse rows object and create userData summary
         for (const [itemId, itemInfo] of Object.entries(rows)) {
+            console.log("itemId: ", itemId);
             // key is an item id, value has a lot of extra info -- just grab the relevant stuff
             if (itemInfo.purchased) {
                 // item was purchased, grab the relevant info
