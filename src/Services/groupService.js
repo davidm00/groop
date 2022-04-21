@@ -126,10 +126,11 @@ export const setGroupName = async (groupId, newGroupName) => {
 // Returns: 0 on success, -1 on failure
 export const deleteGroup = async (groupId) => {
   console.log("in deleteGroup with id: ", groupId);
+  // first grab the group object from parse
   const Group = Parse.Object.extend("Group");
-  const query = new Parse.Query(Group);
-  query.equalTo("objectId", groupId);
-  const group = await query.first({
+  const query1 = new Parse.Query(Group);
+  query1.equalTo("objectId", groupId);
+  const group = await query1.first({
     success: function(group) {
       console.log("fetched group: ", group);
       return group;
@@ -143,8 +144,36 @@ export const deleteGroup = async (groupId) => {
     // couldn't retrieve group object
     return -1;
   }
+  // now we need to delete all the lists that point to it
+  const List = Parse.Object.extend("List");
+  const query2 = new Parse.Query(List);
+  // make a pointer to the group
+  const groupPointer = new Parse.Object("Group");
+  groupPointer.set("objectId", groupId);
+  query2.equalTo("group", groupPointer);
+  let listToDelete = await query2.first({
+    success: function(list) {
+      return list;
+    },
+    error: function(error) {
+      return null;
+    }
+  });
+  while (listToDelete) {
+    // try to delete the list and grab the next
+    console.log("Deleting list with id: ", listToDelete.id);
+    await listToDelete.destroy();
+    listToDelete = await query2.first({
+      success: function(list) {
+        return list;
+      },
+      error: function(error) {
+        return null;
+      }
+    })
+  }
   try {
-    // delete the group
+    // now we can delete the group
     let result = await group.destroy();
     console.log("Object deleted with objectId: " + result.id);
     return 0;
