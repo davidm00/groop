@@ -627,10 +627,8 @@ export default function ItemTable({ listId, groupMembers }) {
 
   const deleteRow = async (itemId) => {
     setPaymentModalUpdate(!paymentModalUpdate);
-    console.log("Selected before delete: ", selected);
     // save the row in case deletion fails
     const theRow = rows[itemId];
-    console.log("theRow at top of deleteRow: ", theRow);
     // if it was selected, then remove it from the selected state list variable
     let wasSelected = false;
     for (let i = 0; i < selected.length; i++) {
@@ -639,13 +637,10 @@ export default function ItemTable({ listId, groupMembers }) {
         break;
       }
     }
-    console.log("Going to set selected as: ", selected.filter((id, _) => (id !== itemId)));
     setSelected(selected.filter((id, _) => (id !== itemId)));
     // update rows state first so delete feels immediate
     let theRows = rows;
-    console.log("theRows before deletion in ItemTable: ", theRows);
     delete theRows[itemId];
-    console.log("rows after deletion in ItemTable: ", theRows);
     setRows(theRows);
     // try to delete item from database
     const rc = await deleteItemById(itemId);
@@ -657,7 +652,6 @@ export default function ItemTable({ listId, groupMembers }) {
       if (wasSelected) {
         setSelected(selected.concat([itemId]));
       }
-      console.log("Selected after failed delete: ", selected);
       setErrorMessage(`Failed to delete the following item: ${theRow.name}`);
     }
   };

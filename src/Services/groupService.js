@@ -90,6 +90,7 @@ export const createGroup = async (groupName, userId) => {
 export const setGroupName = async (groupId, newGroupName) => {
   const Group = Parse.Object.extend("Group");
   const query = new Parse.Query(Group);
+  query.equalTo("objectId", groupId);
   const group = await query.first({
     success: function(group) {
       return group;
