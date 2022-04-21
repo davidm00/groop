@@ -64,6 +64,7 @@ export const createGroup = async (groupName, userId) => {
   // now try to create the group
   const group = new Parse.Object("Group");
   group.set("name", groupName);
+  group.set("createdBy", user);
   try{
     // save the Object
     let groupResult = await group.save()

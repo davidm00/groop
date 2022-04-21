@@ -176,6 +176,7 @@ const Groups = () => {
                   key={group.id} group={group} 
                   setErrorMessageCallback={setErrorMessageCallback}
                   removeGroupFromParentStateCallback={removeGroupFromGroupsArray}
+                  showEditIcon={localUser.id === (group.attributes.createdBy ? group.attributes.createdBy.id : -1)}
                 />;
             })
           ) : (

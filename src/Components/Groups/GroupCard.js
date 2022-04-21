@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // GroupCard Component
-const GroupCard = ({ group, setErrorMessageCallback, removeGroupFromParentStateCallback }) => {
+const GroupCard = ({ group, setErrorMessageCallback, removeGroupFromParentStateCallback, showEditIcon }) => {
   const classes = useStyles();
   const [name, setName] = useState(group.attributes.name);
   let navigate = useNavigate();
@@ -170,21 +170,23 @@ const GroupCard = ({ group, setErrorMessageCallback, removeGroupFromParentStateC
             {name}
           </Typography>
         </Box>
+        { showEditIcon &&
         <Box className={classes.cardActions}>
-            <Tooltip
-              title="Edit group"
-              arrow
-            >
-            <Box 
-              className={classes.editIcon}
-              onClick={(e) => {handleEditGroupModalOpen(e)}}
-            >
-              <EditIcon 
-                fontSize="medium"
-              />
-            </Box>
-            </Tooltip>
+          <Tooltip
+            title="Edit group"
+            arrow
+          >
+          <Box 
+            className={classes.editIcon}
+            onClick={(e) => {handleEditGroupModalOpen(e)}}
+          >
+            <EditIcon 
+              fontSize="medium"
+            />
           </Box>
+          </Tooltip>
+        </Box>
+        }
       </Card>
     </Box>
   );
