@@ -19,6 +19,11 @@ const useStyles = makeStyles(() => ({
     alignContent: "end",
     gridGap: 10,
   },
+  groupsPage: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "3em"
+  }
 }));
 
 // Parent Component of GroupCards
@@ -36,10 +41,8 @@ const Groups = () => {
   // render the groups
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="start"
-      sx={{ padding: "5rem", flexGrow: 1 }}
+      className={classes.groupsPage}
+      sx={{ flexGrow: 1 }}
     >
       <PageHeader
         pageTitle={"Your Groups"}
