@@ -117,7 +117,17 @@ const Groups = () => {
       // error: alert user
       setErrorMessage(`Failed to create new list: ${attrs.name}`);
     }
-    setCreateGroupModalOpen(false)
+    setCreateGroupModalOpen(false);
+  }
+
+  // callback for GroupCard to use to set the error message if necessary
+  const setErrorMessageCallback = (errorMessage) => {
+    setErrorMessage(errorMessage);
+  }
+
+  // callback for ListCard to remove a list from the local state if necessary
+  const removeGroupFromGroupsArray = (groupId) => {
+    setGroups(groups.filter(group => (group.id !== groupId)));
   }
 
   // render the groups
@@ -144,7 +154,7 @@ const Groups = () => {
             </Box> 
             <Box className={classes.modalContent}>
               <ModalForm 
-                formType={"CREATE_LIST_OR_GROUP"}
+                formType={"CREATE_GROUP"}
                 onSubmit={onCreateGroupFormSubmit}
                 onClose={handleCreateGroupModalClose}
                 attributes={null}  
@@ -162,7 +172,11 @@ const Groups = () => {
         <Box sx={{ flexGrow: 1 }} className={classes.groupGrid}>
           {groups.length > 0 ? (
             groups.map((group) => {
-              return <GroupCard key={group.id} group={group} />;
+              return <GroupCard 
+                  key={group.id} group={group} 
+                  setErrorMessageCallback={setErrorMessageCallback}
+                  removeGroupFromParentStateCallback={removeGroupFromGroupsArray}
+                />;
             })
           ) : (
               <Box sx={{ flexGrow: 1, width: "100%" }}>

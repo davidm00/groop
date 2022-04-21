@@ -177,7 +177,7 @@ const List = (group) => {
             <Box className={classes.modalContent}>
                 
               <ModalForm 
-                formType={"CREATE_LIST_OR_GROUP"}
+                formType={"CREATE_LIST"}
                 onSubmit={onCreateListFormSubmit}
                 onClose={handleCreateListModalClose}
                 attributes={null}  

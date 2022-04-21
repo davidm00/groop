@@ -152,7 +152,7 @@ const ListCard = ({ list, setErrorMessageCallback, removeListFromParentStateCall
             </Box> 
             <Box className={classes.modalContent}>
               <ModalForm 
-                formType={"EDIT_LIST_OR_GROUP"}
+                formType={"EDIT_LIST"}
                 onSubmit={onEditListFormSubmit}
                 onClose={handleEditListModalClose}
                 attributes={{name: name}}  
