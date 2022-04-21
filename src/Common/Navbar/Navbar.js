@@ -67,7 +67,6 @@ const Navbar = () => {
     setLocalUser(null);
   };
 
-
   return (
     <Box maxWidth={"100%"} sx={{ flexGrow: 1 }}>
       <Box sx={{ flexGrow: 1 }}>
@@ -103,7 +102,10 @@ const Navbar = () => {
                         location.pathname === "/register") &&
                       "none",
                   }}
-                  onClick={() => navigate(-1)}
+                  onClick={() => {
+                    // navigate("/groups", { state:  "back" });
+                    navigate(-1, { state: "back", replace:true  });
+                  }}
                 >
                   <ChevronLeft />
                 </IconButton>

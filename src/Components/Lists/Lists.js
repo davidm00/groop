@@ -112,6 +112,7 @@ const List = (group) => {
   }, [params, state]);
 
   useEffect(() => {
+    console.log("getting group members in Lists component");
     getAllGroupMembers(params.groupId).then((res) => {
       setGroupMembers(res);
     });

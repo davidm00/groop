@@ -158,7 +158,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                     title={
                       user.attributes.firstName + " " + user.attributes.lastName
                     }
-                    key={user.email}
+                    key={user.id}
                     arrow
                   >
                     <Avatar
@@ -177,7 +177,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                 );
               })
             ) : (
-              <>{stringIfNoUsers}</>
+              <Typography>{stringIfNoUsers}</Typography>
             )}
           </AvatarGroup>
         ) : (

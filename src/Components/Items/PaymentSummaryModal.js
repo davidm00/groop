@@ -51,12 +51,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
+const PaymentSummaryModal = ({open, rows, onClose, groupMembers, update}) => {
     const theme = useTheme();
     const classes = useStyles();
     const [userData, setUserData] = useState(null);
+    console.log("rows in payment modal: ", rows);
 
     useEffect(() => {
+        console.log("updating payment modal with update boolean: ", update);
         if (!rows || !groupMembers) {
             return;
         }
@@ -72,18 +74,15 @@ const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
         }
         console.log("theUserData before filling it: ", theUserData);
         // parse rows object and create userData summary
-        for (const [itemId, itemInfo] of Object.entries(rows)) {
-            console.log("itemId: ", itemId);
+        for (const [, itemInfo] of Object.entries(rows)) {
             // key is an item id, value has a lot of extra info -- just grab the relevant stuff
             if (itemInfo.purchased) {
                 // item was purchased, grab the relevant info
-                console.log("itemInfo.purchaserId: ", itemInfo.purchaserId);
                 theUserData[itemInfo.purchaserId].amountPaid += itemInfo.quantity * itemInfo.price;
                 // add to the stake of every user in the splitAmong relation
                 for (let i = 0; i < itemInfo.splitAmong.length; i++) {
                     let desirer = itemInfo.splitAmong[i];
                     // amount added is (price * quantity) / number of desirers
-                    console.log("desirer.id: ", desirer.id);
                     theUserData[desirer.id].stake += (itemInfo.price * itemInfo.quantity) / itemInfo.splitAmong.length;
                 }
             }
@@ -91,7 +90,6 @@ const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
         for (let i = 0; i < Object.keys(theUserData).length; i++) {
             // calculate the difference between amount paid and stake
             const key = Object.keys(theUserData)[i];
-            console.log("key: ", key);
             let info = theUserData[key];
             if (info.amountPaid > info.stake) {
                 const difference = info.amountPaid - info.stake;
@@ -103,8 +101,9 @@ const PaymentSummaryModal = ({open, rows, onClose, groupMembers}) => {
                 theUserData[key].owesMoney = true;
             }
         }
-        setUserData(theUserData);
-    }, [rows, groupMembers]);
+        console.log("setting userData as: ", theUserData);
+        setUserData({...theUserData});
+    }, [rows, groupMembers, update]);
 
 
     return (
