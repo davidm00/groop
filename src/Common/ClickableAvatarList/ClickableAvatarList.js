@@ -46,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
+  console.log("ClickableAvatarList props: " ,{
+    users: users,
+    modalTitle: modalTitle,
+    stringIfNoUsers: stringIfNoUsers
+  });
   const classes = useStyles();
   const theme = useTheme();
   // for modal
@@ -181,7 +186,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                 );
               })
             ) : (
-              <>{stringIfNoUsers}</>
+              <Typography>{stringIfNoUsers}</Typography>
             )}
           </AvatarGroup>
         ) : (

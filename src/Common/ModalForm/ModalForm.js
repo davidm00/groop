@@ -95,6 +95,8 @@ const quantityRegex = /^[1-9]?([0-9]{1,3})?$/;
 // - "EDIT_ITEM"
 // - "CREATE_LIST"
 // - "EDIT_LIST"
+// - "CREATE_GROUP"
+// - "EDIT_GROUP"
 const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
 
     const classes = useStyles();
@@ -118,8 +120,8 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
             },
             markAsPurchased: false,
             markAsDesired: true
-        } : ( formType === "CREATE_LIST" ? {
-            name: null
+        } : ( (formType === "CREATE_LIST" || formType==="CREATE_GROUP") ? {
+            name: ""
         } 
         : ( formType === "EDIT_ITEM" ? {
             id: attributes.id,
@@ -316,7 +318,8 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
         )
         }
         {/* #################################### */}
-        {(formType === "CREATE_LIST" || formType === "EDIT_LIST") && 
+        {(formType === "CREATE_LIST" || formType === "EDIT_LIST" 
+        || formType==="CREATE_GROUP" || formType==="EDIT_GROUP") && 
         (
         <Box>
             <form onSubmit={preventDefault} autoComplete="off">
@@ -327,24 +330,30 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                     spacing={2}
                 >
                     <Box className={classes.sameRow}>
-                        <Typography variant="h7">List Name</Typography>
+                        <Typography variant="h7">
+                            {(formType === "CREATE_LIST" || formType === "EDIT_LIST") && "List Name"}
+                            {(formType === "CREATE_GROUP" || formType === "EDIT_GROUP") && "Group Name"}
+                        </Typography>
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
-                                value={attrs.name}
+                                value={attrs.name ? attrs.name : ""}
                                 onChange={onChangeHandler("name")}
-                                label="List Name"
+                                label="Name"
                                 helperText={nameInputWarning ? 
-                                    "List name is required" 
+                                    "Name is required" 
                                     : null}
                                 error={nameInputWarning ? true : false}
                                 required
                             />
                         </FormControl> 
                     </Box>
-                    {formType === "EDIT_LIST" && (
+                    {(formType === "EDIT_LIST" || formType==="EDIT_GROUP") && (
                         <Box className={classes.sameRow}>
-                            <Typography variant="h7">Delete List</Typography>
+                            <Typography variant="h7">
+                                {formType === "EDIT_LIST" && "Delete List"}
+                                {formType === "EDIT_GROUP" && "Delete Group"}
+                            </Typography>
                             <Box 
                                 className={classes.expandArrow}
                                 onClick={() => setShowDeleteButton(!showDeleteButton)}
@@ -354,7 +363,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                             </Box>
                         </Box>
                     )}
-                    {(formType === "EDIT_LIST" && showDeleteButton) && (
+                    {((formType === "EDIT_LIST" || formType==="EDIT_GROUP") && showDeleteButton) && (
                         <Box className={classes.deleteButton}>
                             <Button 
                                 variant="delete"
@@ -362,7 +371,8 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                                     onSubmit({...attrs, delete: true});
                                 }}>
                                 <Typography variant="h7">
-                                    Delete List
+                                    {formType === "EDIT_LIST" && "Delete List"}
+                                    {formType === "EDIT_GROUP" && "Delete Group"}
                                 </Typography>
                             </Button>
                         </Box>
