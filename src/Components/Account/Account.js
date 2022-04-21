@@ -15,9 +15,11 @@ import { UserContext } from "../../Context/userContext";
 import { useNavigate } from "react-router-dom";
 import { resetPassword, uploadPhoto } from "../../Services/userService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import parse from "parse";
 
 const Account = () => {
-  const { localUser, setLocalUser, localLogOut } = useContext(UserContext);
+  const { localUser, setLocalUser } = useContext(UserContext);
+  console.log("LOCALUSER: ", localUser);
   const [image, setImage] = useState({
     currentFile: undefined,
     previewImage: undefined,
@@ -33,7 +35,7 @@ const Account = () => {
   const [uploaded, setUploaded] = useState(false);
   const navigate = useNavigate();
   const logOut = () => {
-    localLogOut();
+    parse.User.logOut();
     setLocalUser(null);
     navigate("/login", { replace: true });
   };
@@ -164,10 +166,12 @@ const Account = () => {
             </Typography>
           )}
         </Stack>
-        <Stack direction="column"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}>
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+        >
           <Stack
             direction="row"
             justifyContent="center"

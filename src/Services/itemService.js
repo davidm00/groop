@@ -1,6 +1,6 @@
 import Parse from "parse";
 import {getUserById} from "./userService";
-import {getListById} from "./listService";
+// import {getListById} from "./listService";
 
 // READ operation - get all items from the 
 export const getAllItemsInList = async (listId) => {

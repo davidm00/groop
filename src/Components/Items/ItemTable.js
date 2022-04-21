@@ -24,14 +24,18 @@ import {
   Modal,
   Fade
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import EditIcon from "@mui/icons-material/Edit";
-import PhotoIcon from "@mui/icons-material/Photo";
-import CrisisAlertIcon from "@mui/icons-material/CrisisAlert";
-import RefreshIcon from "@mui/icons-material/Refresh";
+
+import {
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  PersonAdd as PersonAddIcon,
+  ShoppingBag as ShoppingBagIcon,
+  Edit as EditIcon,
+  Photo as PhotoIcon,
+  Refresh as RefreshIcon,
+  CrisisAlert as CrisisAlertIcon
+} from "@mui/icons-material";
+
 import {
   getAllItemsInList,
   getUserNameByUserId,

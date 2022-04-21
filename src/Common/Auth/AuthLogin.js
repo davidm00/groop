@@ -27,7 +27,7 @@ const AuthLogin = () => {
             );
             // TODO: redirect user to main app
             setAdd(false);
-            setLocalUser(user);
+            setLocalUser(userLoggedIn);
             navigate("/groups");
           } else {
             setAdd(false);
