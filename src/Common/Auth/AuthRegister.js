@@ -29,7 +29,7 @@ const AuthRegister = () => {
             );
             // TODO: redirect user to main app
             setAdd(false);
-            setLocalUser(newUser);
+            setLocalUser(userCreated);
             navigate("/groups");
           } else {
             setAdd(false);

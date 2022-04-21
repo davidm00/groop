@@ -5,12 +5,7 @@ import Parse from "parse/lib/browser/Parse";
 const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
-  // the value that will be given to the context
   const [localUser, setLocalUser] = useState(null);
-
-  const localLogOut = () => {
-    Parse.User.logOut();
-  };
 
   useEffect(() => {
     if (Parse.User.current()) {
@@ -18,15 +13,14 @@ const UserContextProvider = ({ children }) => {
         setLocalUser(Parse.User.current());
       }
     }
-  }, [localLogOut]);
+  }, []);
 
   const providerValue = useMemo(
     () => ({
       localUser,
       setLocalUser,
-      localLogOut,
     }),
-    [localUser, setLocalUser, localLogOut]
+    [localUser, setLocalUser]
   );
 
   return (
