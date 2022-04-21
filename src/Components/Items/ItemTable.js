@@ -622,10 +622,15 @@ export default function ItemTable({ listId, groupMembers }) {
     setRows({...theRows});
   }
 
+  // need to force payment modal to recalculate when item is deleted
+  const [paymentModalUpdate, setPaymentModalUpdate] = useState(false);
+
   const deleteRow = async (itemId) => {
+    setPaymentModalUpdate(!paymentModalUpdate);
     console.log("Selected before delete: ", selected);
     // save the row in case deletion fails
     const theRow = rows[itemId];
+    console.log("theRow at top of deleteRow: ", theRow);
     // if it was selected, then remove it from the selected state list variable
     let wasSelected = false;
     for (let i = 0; i < selected.length; i++) {
@@ -638,7 +643,9 @@ export default function ItemTable({ listId, groupMembers }) {
     setSelected(selected.filter((id, _) => (id !== itemId)));
     // update rows state first so delete feels immediate
     let theRows = rows;
+    console.log("theRows before deletion in ItemTable: ", theRows);
     delete theRows[itemId];
+    console.log("rows after deletion in ItemTable: ", theRows);
     setRows(theRows);
     // try to delete item from database
     const rc = await deleteItemById(itemId);
@@ -729,7 +736,6 @@ export default function ItemTable({ listId, groupMembers }) {
   const handlePaymentSummaryModalOpen = () => setPaymentSummaryModalOpen(true);
   const handlePaymentSummaryModalClose = () => setPaymentSummaryModalOpen(false);
 
-
   return (
     <Box sx={{ width: "100%" }}>
       <div>
@@ -738,6 +744,7 @@ export default function ItemTable({ listId, groupMembers }) {
           rows={rows}
           onClose={handlePaymentSummaryModalClose}
           groupMembers={groupMembers}
+          update={paymentModalUpdate}
         />
         <Modal
           aria-labelledby="Modal showing image of item"

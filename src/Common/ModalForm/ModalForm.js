@@ -217,7 +217,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
-                                value={attrs.name}
+                                value={attrs.name ? attrs.name : ""}
                                 onChange={onChangeHandler("name")}
                                 label="Item Name"
                                 helperText={nameInputWarning ? 
@@ -233,7 +233,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
-                                value={attrs.price}
+                                value={attrs.price ? attrs.price : ""}
                                 onChange={onChangeHandler("price")}
                                 label="Price"
                                 helperText={priceInputWarning ? 
@@ -248,7 +248,7 @@ const ModalForm = ({formType, onSubmit, onClose, attributes}) => {
                         <FormControl sx={{ m: 1, maxWidth: "60%" }} variant="filled">
                             <TextField
                                 type={"text"}
-                                value={attrs.quantity}
+                                value={attrs.quantity ? attrs.quantity : ""}
                                 onChange={onChangeHandler("quantity")}
                                 label="Quantity"
                                 helperText={quantityInputWarning ? 
