@@ -144,6 +144,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                       " " +
                       user.attributes.lastName
                     }
+                    key={user.email}
                     arrow
                   >
                     <Avatar
@@ -160,6 +161,7 @@ const ClickableAvatarList = ({ users, modalTitle, stringIfNoUsers }) => {
                       " " +
                       user.attributes.lastName
                     }
+                    key={user.email}
                     arrow
                   >
                     <Avatar
