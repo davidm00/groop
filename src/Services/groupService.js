@@ -65,6 +65,9 @@ export const createGroup = async (groupName, userId) => {
   const group = new Parse.Object("Group");
   group.set("name", groupName);
   group.set("createdBy", user);
+  // add user to group's "users" relation
+  let usersRelation = group.relation("users");
+  usersRelation.add(user);
   try{
     // save the Object
     let groupResult = await group.save()

@@ -82,6 +82,7 @@ export const createList = async (listName, groupId) => {
 export const setListName = async (listId, newListName) => {
   const List = Parse.Object.extend("List");
   const query = new Parse.Query(List);
+  query.equalTo("objectId", listId);
   const list = await query.first({
     success: function(list) {
         return list;
