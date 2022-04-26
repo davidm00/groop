@@ -1,4 +1,27 @@
 # ChangeLog
+
+### 1.0.0
+> (Feature 5) Authentication
+
+> - [Updated UML Diagrams (Google Slides)](https://docs.google.com/presentation/d/1hqoLUkQqo7VtmUwr59hd4qNV3zNioZZG9MfKgY40slo/edit?usp=sharing)
+
+> - Created join/leave group functionality
+
+> - Created a chat feature within list and item components that is tied to a specific group and its members
+
+> - Created an account page that allows users to upload a profile picture and change their password
+
+> - Created an item table using a template from MUI that displays items in a list
+
+> - Created display for summaries of amount owed by each group member
+
+> - Added capability to edit, create and delete items.
+
+> - Added capability to edit, create and delete lists.
+
+> - Added capability to edit, create and delete groups.
+
+> - Deployed website to netlify @ https://groop.netlify.app
 ### 0.3.0
 
 > (Feature 5) Authentication

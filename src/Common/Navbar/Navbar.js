@@ -106,6 +106,9 @@ const Navbar = () => {
                     if(location.pathname.includes("/item")){
                       navigate(-1);
                     }
+                    if(location.pathname.includes("/account")){
+                      navigate(-1);
+                    }
                     navigate("/groups", { state:  "back" });
                     // navigate(-1, { state: "back", replace:true  });
                   }}
