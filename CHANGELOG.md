@@ -3,6 +3,8 @@
 ### 1.0.0
 > (Feature 6) Individual User Stories
 
+> - [View presentation slides here (Google Slides)](https://docs.google.com/presentation/d/1jxpG9bzV6Cjs-iz4gm1HUYkLjoCYHjfHpiUlkOzzKik/edit?usp=sharing)
+
 > - [Updated UML Diagrams (Google Slides)](https://docs.google.com/presentation/d/1hqoLUkQqo7VtmUwr59hd4qNV3zNioZZG9MfKgY40slo/edit?usp=sharing)
 
 > - Created join/leave group functionality
