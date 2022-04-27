@@ -1,7 +1,7 @@
 # ChangeLog
 
 ### 1.0.0
-> (Feature 5) Authentication
+> (Feature 6) Individual User Stories
 
 > - [Updated UML Diagrams (Google Slides)](https://docs.google.com/presentation/d/1hqoLUkQqo7VtmUwr59hd4qNV3zNioZZG9MfKgY40slo/edit?usp=sharing)
 
