@@ -11,7 +11,7 @@
 
 # How to test user stories:
 
-- Note that functionality is seen best if you log in as the example user so that you already belong to two groups, each of which contain three lists. Clicking Group 1's card on the Groups page and then List A on the Lists page will allow you to see the most example data in the item table on the Items page.
+> Note that functionality is seen best if you log in as the example user so that you already belong to two groups, each of which contain three lists. Clicking Group 1's card on the Groups page and then List A on the Lists page will allow you to see the most example data in the item table on the Items page.
 
 - To test the netlify deploy, simply follow the link in the changelog.
 
